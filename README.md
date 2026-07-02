@@ -61,7 +61,7 @@ flutter run \
 Create `android/key.properties` from `android/key.properties.example` and keep the real file private.
 
 ```bash
-flutter build apk \
+flutter build apk --release \
   --dart-define=SUPABASE_URL=https://your-project.supabase.co \
   --dart-define=SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
 ```

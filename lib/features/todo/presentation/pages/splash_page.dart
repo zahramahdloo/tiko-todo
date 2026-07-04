@@ -32,11 +32,7 @@ class _SplashPageState extends State<SplashPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const FaIcon(
-                  FontAwesomeIcons.listCheck,
-                  size: 80,
-                  color: Colors.blue,
-                )
+            Image.asset('assets/icons/app_icon.png', width: 80, height: 80)
                 .animate()
                 .scale(
                   begin: const Offset(0.0, 0.0),

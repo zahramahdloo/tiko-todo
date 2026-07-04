@@ -10,22 +10,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  const supabasePublishableKey = String.fromEnvironment(
-    'SUPABASE_PUBLISHABLE_KEY',
-  );
+  const supabasePublishableKey = String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
 
   if (supabaseUrl.isEmpty || supabasePublishableKey.isEmpty) {
     throw StateError(
-      'Missing Supabase configuration. Provide SUPABASE_URL and '
-      'SUPABASE_PUBLISHABLE_KEY with --dart-define.',
+      'Missing Supabase configuration. '
+      'Run with --dart-define-from-file=.env',
     );
   }
 
-  await Supabase.initialize(
-    url: supabaseUrl,
-    publishableKey: supabasePublishableKey,
-  );
+  await Supabase.initialize(url: supabaseUrl, publishableKey: supabasePublishableKey);
 
   await initDI();
   await NotificationService.init();

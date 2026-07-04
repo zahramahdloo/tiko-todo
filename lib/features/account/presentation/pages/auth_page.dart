@@ -37,18 +37,13 @@ class _AuthPageState extends State<AuthPage> {
             email: _emailController.text,
             password: _passwordController.text,
           )
-        : await controller.signIn(
-            email: _emailController.text,
-            password: _passwordController.text,
-          );
+        : await controller.signIn(email: _emailController.text, password: _passwordController.text);
 
     if (!mounted) return;
     setState(() => _isLoading = false);
 
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
       return;
     }
 
@@ -69,22 +64,20 @@ class _AuthPageState extends State<AuthPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  FaIcon(FontAwesomeIcons.listCheck, size: 72, color: primary),
+                  Center(child: Image.asset('assets/icons/app_icon.png', width: 50, height: 50)),
                   const SizedBox(height: 16),
                   Text(
                     _isSignUp ? 'ساخت حساب تیکو' : 'ورود به تیکو',
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'کارها، تنظیمات و ظاهر اپ روی همین دستگاه برای حساب شما ذخیره می‌شود.',
                     textAlign: TextAlign.center,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 28),
                   if (_isSignUp) ...[
@@ -125,13 +118,9 @@ class _AuthPageState extends State<AuthPage> {
                         child: FaIcon(FontAwesomeIcons.lock, size: 18),
                       ),
                       suffixIcon: IconButton(
-                        onPressed: () => setState(
-                          () => _obscurePassword = !_obscurePassword,
-                        ),
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                         icon: FaIcon(
-                          _obscurePassword
-                              ? FontAwesomeIcons.eye
-                              : FontAwesomeIcons.eyeSlash,
+                          _obscurePassword ? FontAwesomeIcons.eye : FontAwesomeIcons.eyeSlash,
                           size: 18,
                         ),
                       ),
@@ -153,14 +142,8 @@ class _AuthPageState extends State<AuthPage> {
                   ),
                   const SizedBox(height: 12),
                   TextButton(
-                    onPressed: _isLoading
-                        ? null
-                        : () => setState(() => _isSignUp = !_isSignUp),
-                    child: Text(
-                      _isSignUp
-                          ? 'حساب داری؟ وارد شو'
-                          : 'حساب نداری؟ ثبت‌نام کن',
-                    ),
+                    onPressed: _isLoading ? null : () => setState(() => _isSignUp = !_isSignUp),
+                    child: Text(_isSignUp ? 'حساب داری؟ وارد شو' : 'حساب نداری؟ ثبت‌نام کن'),
                   ),
                 ],
               ),

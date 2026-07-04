@@ -503,11 +503,6 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
 
       title: BlocBuilder<TodoBloc, TodoState>(
         builder: (context, state) {
-          final totalCount = state is TodoLoaded ? state.todos.length : 0;
-          final pendingCount = state is TodoLoaded
-              ? state.todos.where((todo) => todo.status != TodoStatus.completed).length
-              : 0;
-
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -49,47 +49,50 @@ class _MainShellPageState extends State<MainShellPage> {
           const SettingsPage(showAppBar: false, showQuickAccess: false),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _selectTab,
-        height: 72,
-        backgroundColor: Colors.white,
-        indicatorColor: AppColors.primary.withValues(alpha: 0.12),
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: const [
-          NavigationDestination(
-            icon: _NavIcon(icon: HugeIcons.strokeRoundedHome01),
-            selectedIcon: _NavIcon(
-              icon: HugeIcons.strokeRoundedHome01,
-              color: AppColors.primary,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: NavigationBar(
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: _selectTab,
+          height: 72,
+          backgroundColor: Colors.white,
+          indicatorColor: AppColors.primary.withValues(alpha: 0.12),
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          destinations: const [
+            NavigationDestination(
+              icon: _NavIcon(icon: HugeIcons.strokeRoundedHome01),
+              selectedIcon: _NavIcon(
+                icon: HugeIcons.strokeRoundedHome01,
+                color: AppColors.primary,
+              ),
+              label: 'خانه',
             ),
-            label: 'خانه',
-          ),
-          NavigationDestination(
-            icon: _NavIcon(icon: HugeIcons.strokeRoundedPlusSignCircle),
-            selectedIcon: _NavIcon(
-              icon: HugeIcons.strokeRoundedPlusSignCircle,
-              color: AppColors.primary,
+            NavigationDestination(
+              icon: _NavIcon(icon: HugeIcons.strokeRoundedPlusSignCircle),
+              selectedIcon: _NavIcon(
+                icon: HugeIcons.strokeRoundedPlusSignCircle,
+                color: AppColors.primary,
+              ),
+              label: 'افزودن',
             ),
-            label: 'افزودن',
-          ),
-          NavigationDestination(
-            icon: _NavIcon(icon: HugeIcons.strokeRoundedCalendar03),
-            selectedIcon: _NavIcon(
-              icon: HugeIcons.strokeRoundedCalendar03,
-              color: AppColors.primary,
+            NavigationDestination(
+              icon: _NavIcon(icon: HugeIcons.strokeRoundedCalendar03),
+              selectedIcon: _NavIcon(
+                icon: HugeIcons.strokeRoundedCalendar03,
+                color: AppColors.primary,
+              ),
+              label: 'جدول زمانی',
             ),
-            label: 'جدول زمانی',
-          ),
-          NavigationDestination(
-            icon: _NavIcon(icon: HugeIcons.strokeRoundedSettings02),
-            selectedIcon: _NavIcon(
-              icon: HugeIcons.strokeRoundedSettings02,
-              color: AppColors.primary,
+            NavigationDestination(
+              icon: _NavIcon(icon: HugeIcons.strokeRoundedSettings02),
+              selectedIcon: _NavIcon(
+                icon: HugeIcons.strokeRoundedSettings02,
+                color: AppColors.primary,
+              ),
+              label: 'تنظیمات',
             ),
-            label: 'تنظیمات',
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

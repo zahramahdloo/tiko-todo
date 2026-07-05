@@ -27,6 +27,9 @@ class _TimetablePageState extends State<TimetablePage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final horizontalPadding = width >= 720 ? 24.0 : 16.0;
+    final maxWidth = width >= 840 ? 760.0 : 720.0;
     final weekDays = _visibleWeek(_selectedDate);
 
     return Scaffold(
@@ -34,7 +37,7 @@ class _TimetablePageState extends State<TimetablePage> {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
+            constraints: BoxConstraints(maxWidth: maxWidth),
             child: Column(
               children: [
                 _TimetableHeader(
@@ -72,7 +75,12 @@ class _TimetablePageState extends State<TimetablePage> {
                         }
 
                         return ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                          padding: EdgeInsets.fromLTRB(
+                            horizontalPadding,
+                            16,
+                            horizontalPadding,
+                            24,
+                          ),
                           itemCount: todos.length,
                           separatorBuilder: (_, _) =>
                               const SizedBox(height: 10),

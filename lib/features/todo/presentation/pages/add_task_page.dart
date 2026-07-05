@@ -136,6 +136,10 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final viewInsets = MediaQuery.viewInsetsOf(context);
+    final horizontalPadding = width >= 720 ? 24.0 : 16.0;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -148,7 +152,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 640),
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                12,
+                horizontalPadding,
+                viewInsets.bottom + 24,
+              ),
               children: [
                 _Panel(
                   child: Column(

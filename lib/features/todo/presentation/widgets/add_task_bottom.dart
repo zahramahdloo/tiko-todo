@@ -22,7 +22,7 @@ Future<void> showAddTaskBottomSheet({
 }) {
   TodoStatus selectedStatus = TodoStatus.pending;
   TodoPriority selectedPriority = TodoPriority.normal;
-  int? selectedReminder;
+  DateTime? selectedReminderAt;
   DateTime? selectedDueAt;
   String selectedCategory = 'شخصی';
 
@@ -40,6 +40,46 @@ Future<void> showAddTaskBottomSheet({
       return StatefulBuilder(
         builder: (context, setState) {
           final mediaQuery = MediaQuery.of(context);
+
+          Future<void> pickReminderAt() async {
+            final now = DateTime.now();
+            final initialDate =
+                selectedReminderAt ?? now.add(const Duration(hours: 1));
+            final pickedDate = await showDatePicker(
+              context: context,
+              initialDate: initialDate,
+              firstDate: now,
+              lastDate: now.add(const Duration(days: 3650)),
+            );
+
+            if (pickedDate == null || !context.mounted) return;
+
+            final pickedTime = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.fromDateTime(initialDate),
+            );
+
+            if (pickedTime == null || !context.mounted) return;
+
+            final picked = DateTime(
+              pickedDate.year,
+              pickedDate.month,
+              pickedDate.day,
+              pickedTime.hour,
+              pickedTime.minute,
+            );
+
+            if (picked.isBefore(now)) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('زمان یادآوری باید در آینده باشد'),
+                ),
+              );
+              return;
+            }
+
+            setState(() => selectedReminderAt = picked);
+          }
 
           return SafeArea(
             top: false,
@@ -297,38 +337,35 @@ Future<void> showAddTaskBottomSheet({
                         ),
                       ),
                       const SizedBox(height: 6),
-                      DropdownButtonFormField<int?>(
-                        initialValue: selectedReminder,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: pickReminderAt,
+                              icon: const HugeIcon(
+                                icon: HugeIcons.strokeRoundedClock01,
+                                size: 24,
+                                strokeWidth: 2.35,
+                              ),
+                              label: Text(
+                                selectedReminderAt == null
+                                    ? 'انتخاب زمان یادآوری'
+                                    : 'یادآوری: ${_formatDate(selectedReminderAt!)} - ${_formatTime(selectedReminderAt!)}',
+                              ),
+                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                        ),
-                        items: const [
-                          DropdownMenuItem(
-                            value: null,
-                            child: Text('بدون یادآوری'),
-                          ),
-                          DropdownMenuItem(
-                            value: 10,
-                            child: Text('۱۰ دقیقه دیگر'),
-                          ),
-                          DropdownMenuItem(
-                            value: 30,
-                            child: Text('۳۰ دقیقه دیگر'),
-                          ),
-                          DropdownMenuItem(
-                            value: 60,
-                            child: Text('۱ ساعت دیگر'),
-                          ),
-                          DropdownMenuItem(value: 1440, child: Text('فردا')),
+                          if (selectedReminderAt != null)
+                            IconButton(
+                              tooltip: 'حذف یادآوری',
+                              onPressed: () =>
+                                  setState(() => selectedReminderAt = null),
+                              icon: const HugeIcon(
+                                icon: HugeIcons.strokeRoundedMultiplicationSign,
+                                size: 24,
+                                strokeWidth: 2.35,
+                              ),
+                            ),
                         ],
-                        onChanged: (val) =>
-                            setState(() => selectedReminder = val),
                       ),
 
                       const SizedBox(height: 20),
@@ -343,29 +380,22 @@ Future<void> showAddTaskBottomSheet({
 
                             final status = selectedStatus;
                             final priority = selectedPriority;
-                            final reminderMinutes = selectedReminder;
+                            final reminderAt = selectedReminderAt;
                             final dueAt = selectedDueAt;
                             final category = selectedCategory;
                             final subtasks = _parseSubtasks(
                               subtaskController.text,
                             );
 
-                            DateTime? reminderAt;
-                            if (reminderMinutes != null) {
-                              reminderAt = DateTime.now().add(
-                                Duration(minutes: reminderMinutes),
-                              );
-                            }
-
                             Navigator.of(sheetContext).pop();
 
-                            if (reminderMinutes != null) {
-                              await NotificationService.scheduleNotification(
+                            if (reminderAt != null) {
+                              await NotificationService.scheduleNotificationAt(
                                 id:
                                     DateTime.now().millisecondsSinceEpoch ~/
                                     1000,
                                 title: title,
-                                minutes: reminderMinutes,
+                                scheduledAt: reminderAt,
                               );
                             }
 
@@ -408,4 +438,8 @@ List<TodoSubtask> _parseSubtasks(String value) {
 
 String _formatDate(DateTime date) {
   return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+}
+
+String _formatTime(DateTime date) {
+  return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
 }

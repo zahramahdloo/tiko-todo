@@ -33,19 +33,27 @@ class NotificationService {
     required String title,
     required int minutes,
   }) async {
+    await scheduleNotificationAt(
+      id: id,
+      title: title,
+      scheduledAt: DateTime.now().add(Duration(minutes: minutes)),
+    );
+  }
+
+  static Future<void> scheduleNotificationAt({
+    required int id,
+    required String title,
+    required DateTime scheduledAt,
+  }) async {
     if (kDebugMode) {
-      debugPrint(
-        'REMINDER scheduled => ${DateTime.now().add(Duration(minutes: minutes))}',
-      );
+      debugPrint('REMINDER scheduled => $scheduledAt');
     }
 
     await _plugin.zonedSchedule(
       id: id,
       title: 'یادآوری کار',
       body: title,
-      scheduledDate: tz.TZDateTime.now(
-        tz.local,
-      ).add(Duration(minutes: minutes)),
+      scheduledDate: tz.TZDateTime.from(scheduledAt, tz.local),
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'todo_channel',

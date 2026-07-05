@@ -24,7 +24,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   final _subtaskController = TextEditingController();
   TodoStatus _status = TodoStatus.pending;
   TodoPriority _priority = TodoPriority.normal;
-  int? _reminderMinutes;
+  DateTime? _reminderAt;
   DateTime? _dueAt;
   String _category = 'شخصی';
 
@@ -50,6 +50,44 @@ class _AddTaskPageState extends State<AddTaskPage> {
     }
   }
 
+  Future<void> _pickReminderAt() async {
+    final now = DateTime.now();
+    final initialDate = _reminderAt ?? now.add(const Duration(hours: 1));
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 3650)),
+    );
+
+    if (pickedDate == null || !mounted) return;
+
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initialDate),
+    );
+
+    if (pickedTime == null) return;
+
+    final picked = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      pickedTime.hour,
+      pickedTime.minute,
+    );
+
+    if (picked.isBefore(now)) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('زمان یادآوری باید در آینده باشد')),
+      );
+      return;
+    }
+
+    setState(() => _reminderAt = picked);
+  }
+
   Future<void> _submit() async {
     final title = _titleController.text.trim();
     if (title.isEmpty) {
@@ -59,13 +97,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
       return;
     }
 
-    DateTime? reminderAt;
-    if (_reminderMinutes != null) {
-      reminderAt = DateTime.now().add(Duration(minutes: _reminderMinutes!));
-      await NotificationService.scheduleNotification(
+    final reminderAt = _reminderAt;
+    if (reminderAt != null) {
+      await NotificationService.scheduleNotificationAt(
         id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
         title: title,
-        minutes: _reminderMinutes!,
+        scheduledAt: reminderAt,
       );
     }
 
@@ -90,7 +127,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     setState(() {
       _status = TodoStatus.pending;
       _priority = TodoPriority.normal;
-      _reminderMinutes = null;
+      _reminderAt = null;
       _dueAt = null;
       _category = 'شخصی';
     });
@@ -241,31 +278,27 @@ class _AddTaskPageState extends State<AddTaskPage> {
                           ),
                         ),
                       const SizedBox(height: 8),
-                      DropdownButtonFormField<int?>(
-                        initialValue: _reminderMinutes,
-                        decoration: const InputDecoration(labelText: 'یادآوری'),
-                        items: const [
-                          DropdownMenuItem(
-                            value: null,
-                            child: Text('بدون یادآوری'),
-                          ),
-                          DropdownMenuItem(
-                            value: 10,
-                            child: Text('۱۰ دقیقه دیگر'),
-                          ),
-                          DropdownMenuItem(
-                            value: 30,
-                            child: Text('۳۰ دقیقه دیگر'),
-                          ),
-                          DropdownMenuItem(
-                            value: 60,
-                            child: Text('۱ ساعت دیگر'),
-                          ),
-                          DropdownMenuItem(value: 1440, child: Text('فردا')),
-                        ],
-                        onChanged: (value) =>
-                            setState(() => _reminderMinutes = value),
+                      OutlinedButton.icon(
+                        onPressed: _pickReminderAt,
+                        icon: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedClock01,
+                          size: 24,
+                          strokeWidth: 2.35,
+                        ),
+                        label: Text(
+                          _reminderAt == null
+                              ? 'انتخاب زمان یادآوری'
+                              : 'یادآوری: ${_formatGregorian(_reminderAt!)} - ${_formatTime(_reminderAt!)}',
+                        ),
                       ),
+                      if (_reminderAt != null)
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: TextButton(
+                            onPressed: () => setState(() => _reminderAt = null),
+                            child: const Text('حذف یادآوری'),
+                          ),
+                        ),
                       const SizedBox(height: 14),
                       TextField(
                         controller: _subtaskController,
@@ -333,4 +366,8 @@ List<TodoSubtask> _parseSubtasks(String value) {
 
 String _formatGregorian(DateTime date) {
   return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+}
+
+String _formatTime(DateTime date) {
+  return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
 }

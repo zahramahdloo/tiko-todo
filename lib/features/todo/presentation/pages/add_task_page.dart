@@ -65,6 +65,22 @@ class _AddTaskPageState extends State<AddTaskPage> {
     final pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(initialDate),
+      initialEntryMode: TimePickerEntryMode.input,
+      helpText: 'زمان یادآوری را وارد کن',
+      cancelText: 'انصراف',
+      confirmText: 'تأیید',
+      hourLabelText: 'ساعت',
+      minuteLabelText: 'دقیقه',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(primary: AppColors.primary),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedTime == null) return;

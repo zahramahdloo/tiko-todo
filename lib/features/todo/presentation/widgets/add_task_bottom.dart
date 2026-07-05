@@ -4,6 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
 import '../../../../core/notifications/notification_service.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/todo.dart';
 
 Future<void> showAddTaskBottomSheet({
@@ -57,6 +58,22 @@ Future<void> showAddTaskBottomSheet({
             final pickedTime = await showTimePicker(
               context: context,
               initialTime: TimeOfDay.fromDateTime(initialDate),
+              initialEntryMode: TimePickerEntryMode.input,
+              helpText: 'زمان یادآوری را وارد کن',
+              cancelText: 'انصراف',
+              confirmText: 'تأیید',
+              hourLabelText: 'ساعت',
+              minuteLabelText: 'دقیقه',
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: Theme.of(
+                      context,
+                    ).colorScheme.copyWith(primary: AppColors.primary),
+                  ),
+                  child: child!,
+                );
+              },
             );
 
             if (pickedTime == null || !context.mounted) return;

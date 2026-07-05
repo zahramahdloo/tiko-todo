@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../core/account/account_settings_controller.dart';
 import '../../../../core/di/injection.dart';
@@ -64,10 +64,14 @@ class _TodoPageState extends State<TodoPage> {
       final matchesSearch = query.isEmpty || searchableText.contains(query);
       final matchesFilter = switch (_filter) {
         _TodoFilter.all => !todo.isArchived,
-        _TodoFilter.active => !todo.isArchived && todo.status != TodoStatus.completed,
-        _TodoFilter.completed => !todo.isArchived && todo.status == TodoStatus.completed,
-        _TodoFilter.inProgress => !todo.isArchived && todo.status == TodoStatus.inProgress,
-        _TodoFilter.cancelled => !todo.isArchived && todo.status == TodoStatus.cancelled,
+        _TodoFilter.active =>
+          !todo.isArchived && todo.status != TodoStatus.completed,
+        _TodoFilter.completed =>
+          !todo.isArchived && todo.status == TodoStatus.completed,
+        _TodoFilter.inProgress =>
+          !todo.isArchived && todo.status == TodoStatus.inProgress,
+        _TodoFilter.cancelled =>
+          !todo.isArchived && todo.status == TodoStatus.cancelled,
         _TodoFilter.today => !todo.isArchived && _isToday(todo.dueAt),
         _TodoFilter.tomorrow => !todo.isArchived && _isTomorrow(todo.dueAt),
         _TodoFilter.overdue => !todo.isArchived && _isOverdue(todo),
@@ -86,7 +90,9 @@ class _TodoPageState extends State<TodoPage> {
       return switch (_sort) {
         _TodoSort.newest => (b.id ?? 0).compareTo(a.id ?? 0),
         _TodoSort.oldest => (a.id ?? 0).compareTo(b.id ?? 0),
-        _TodoSort.priority => _priorityRank(b.priority).compareTo(_priorityRank(a.priority)),
+        _TodoSort.priority => _priorityRank(
+          b.priority,
+        ).compareTo(_priorityRank(a.priority)),
         _TodoSort.dueDate => _dueSortValue(a).compareTo(_dueSortValue(b)),
       };
     });
@@ -97,13 +103,17 @@ class _TodoPageState extends State<TodoPage> {
   bool _isToday(DateTime? date) {
     if (date == null) return false;
     final now = DateTime.now();
-    return date.year == now.year && date.month == now.month && date.day == now.day;
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
   }
 
   bool _isTomorrow(DateTime? date) {
     if (date == null) return false;
     final tomorrow = DateTime.now().add(const Duration(days: 1));
-    return date.year == tomorrow.year && date.month == tomorrow.month && date.day == tomorrow.day;
+    return date.year == tomorrow.year &&
+        date.month == tomorrow.month &&
+        date.day == tomorrow.day;
   }
 
   bool _isOverdue(Todo todo) {
@@ -216,19 +226,25 @@ class _TodoPageState extends State<TodoPage> {
   }
 
   void _toggleArchive(Todo todo) {
-    context.read<TodoBloc>().add(UpdateTodo(todo.copyWith(isArchived: !todo.isArchived)));
+    context.read<TodoBloc>().add(
+      UpdateTodo(todo.copyWith(isArchived: !todo.isArchived)),
+    );
   }
 
   void _toggleSubtask(Todo todo, int subtaskIndex) {
     final subtasks = [...todo.subtasks];
     final subtask = subtasks[subtaskIndex];
-    subtasks[subtaskIndex] = subtask.copyWith(isCompleted: !subtask.isCompleted);
+    subtasks[subtaskIndex] = subtask.copyWith(
+      isCompleted: !subtask.isCompleted,
+    );
     context.read<TodoBloc>().add(UpdateTodo(todo.copyWith(subtasks: subtasks)));
   }
 
   @override
   Widget build(BuildContext context) {
-    final horizontalPadding = MediaQuery.sizeOf(context).width >= 720 ? 24.0 : 16.0;
+    final horizontalPadding = MediaQuery.sizeOf(context).width >= 720
+        ? 24.0
+        : 16.0;
 
     return Scaffold(
       appBar: PreferredSize(
@@ -250,9 +266,13 @@ class _TodoPageState extends State<TodoPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddSheet,
-        backgroundColor: const Color(0xFF2B60E4),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        child: const FaIcon(FontAwesomeIcons.plus, size: 18),
+        child: const HugeIcon(
+          icon: HugeIcons.strokeRoundedPlusSign,
+          size: 24,
+          strokeWidth: 2.35,
+        ),
       ),
       body: AnimatedBuilder(
         animation: sl<AccountSettingsController>(),
@@ -268,7 +288,12 @@ class _TodoPageState extends State<TodoPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const FaIcon(FontAwesomeIcons.circleExclamation, color: Colors.red, size: 48),
+                      const HugeIcon(
+                        icon: HugeIcons.strokeRoundedAlertCircle,
+                        color: Colors.red,
+                        size: 64,
+                        strokeWidth: 2.35,
+                      ),
                       const SizedBox(height: 12),
                       Text(
                         state.message,
@@ -277,7 +302,8 @@ class _TodoPageState extends State<TodoPage> {
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: () => context.read<TodoBloc>().add(const LoadTodo()),
+                        onPressed: () =>
+                            context.read<TodoBloc>().add(const LoadTodo()),
                         child: const Text('تلاش مجدد'),
                       ),
                     ],
@@ -288,14 +314,20 @@ class _TodoPageState extends State<TodoPage> {
               if (state is TodoLoaded) {
                 final visibleTodos = _visibleTodos(state.todos);
                 final hasActiveFilter =
-                    _filter != _TodoFilter.all || _searchController.text.trim().isNotEmpty;
+                    _filter != _TodoFilter.all ||
+                    _searchController.text.trim().isNotEmpty;
 
                 if (state.todos.isEmpty) {
                   return const Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        FaIcon(FontAwesomeIcons.listCheck, size: 64, color: Colors.grey),
+                        HugeIcon(
+                          icon: HugeIcons.strokeRoundedTask01,
+                          size: 80,
+                          color: Colors.grey,
+                          strokeWidth: 2.35,
+                        ),
                         SizedBox(height: 12),
                         Text(
                           'هیچ کاری وجود ندارد\nروی + بزن تا اولین کار رو اضافه کنی',
@@ -314,10 +346,11 @@ class _TodoPageState extends State<TodoPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const FaIcon(
-                            FontAwesomeIcons.magnifyingGlassMinus,
-                            size: 64,
+                          const HugeIcon(
+                            icon: HugeIcons.strokeRoundedSearchMinus,
+                            size: 80,
                             color: Colors.grey,
+                            strokeWidth: 2.35,
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -337,7 +370,11 @@ class _TodoPageState extends State<TodoPage> {
                     .where((todo) => todo.status == TodoStatus.completed)
                     .length;
                 final urgentCount = state.todos
-                    .where((todo) => !todo.isArchived && todo.priority == TodoPriority.urgent)
+                    .where(
+                      (todo) =>
+                          !todo.isArchived &&
+                          todo.priority == TodoPriority.urgent,
+                    )
                     .length;
                 final overdueCount = state.todos.where(_isOverdue).length;
 
@@ -352,19 +389,31 @@ class _TodoPageState extends State<TodoPage> {
                             // === تولبار دکمه‌ها (تازه‌سازی / کار جدید / تنظیمات / مرتب‌سازی) ===
                             SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
                                 child: Row(
                                   children: [
                                     IconButton(
                                       tooltip: 'تازه‌سازی',
-                                      onPressed: () =>
-                                          context.read<TodoBloc>().add(const LoadTodo()),
-                                      icon: const FaIcon(FontAwesomeIcons.arrowsRotate, size: 17),
+                                      onPressed: () => context
+                                          .read<TodoBloc>()
+                                          .add(const LoadTodo()),
+                                      icon: const HugeIcon(
+                                        icon: HugeIcons.strokeRoundedRefresh,
+                                        size: 23,
+                                        strokeWidth: 2.35,
+                                      ),
                                     ),
                                     IconButton(
                                       tooltip: 'کار جدید',
                                       onPressed: _openAddSheet,
-                                      icon: const FaIcon(FontAwesomeIcons.plus, size: 17),
+                                      icon: const HugeIcon(
+                                        icon: HugeIcons.strokeRoundedPlusSign,
+                                        size: 23,
+                                        strokeWidth: 2.35,
+                                      ),
                                     ),
                                     const Spacer(),
                                     PopupMenuButton<_TodoSort>(
@@ -373,7 +422,11 @@ class _TodoPageState extends State<TodoPage> {
                                       onSelected: (value) {
                                         setState(() => _sort = value);
                                       },
-                                      icon: const FaIcon(FontAwesomeIcons.sort, size: 17),
+                                      icon: const HugeIcon(
+                                        icon: HugeIcons.strokeRoundedSorting03,
+                                        size: 23,
+                                        strokeWidth: 2.35,
+                                      ),
                                       itemBuilder: (context) => const [
                                         PopupMenuItem(
                                           value: _TodoSort.newest,
@@ -426,12 +479,15 @@ class _TodoPageState extends State<TodoPage> {
                               ),
                               sliver: SliverList.separated(
                                 itemCount: visibleTodos.length,
-                                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                                separatorBuilder: (_, _) =>
+                                    const SizedBox(height: 12),
                                 itemBuilder: (context, index) {
                                   final todo = visibleTodos[index];
                                   return TodoItem(
                                     todo: todo,
-                                    onToggle: () => context.read<TodoBloc>().add(ToggleTodo(todo)),
+                                    onToggle: () => context
+                                        .read<TodoBloc>()
+                                        .add(ToggleTodo(todo)),
                                     onEdit: () => _openEditDialog(todo),
                                     onDelete: () => _confirmDelete(todo),
                                     onArchive: () => _toggleArchive(todo),
@@ -496,8 +552,13 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           tooltip: 'تنظیمات',
-          onPressed: () => context.push('/settings'),
-          icon: const FaIcon(FontAwesomeIcons.gear, size: 18, color: Color(0xFF2B60E4)),
+          onPressed: () => context.go('/settings'),
+          icon: const HugeIcon(
+            icon: HugeIcons.strokeRoundedSettings02,
+            size: 24,
+            color: AppColors.primary,
+            strokeWidth: 2.35,
+          ),
         ),
       ],
 
@@ -509,9 +570,16 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset('assets/icons/app_icon.png', width: 25, height: 25),
+                  Image.asset(
+                    'assets/icons/app_icon.png',
+                    width: 25,
+                    height: 25,
+                  ),
                   const SizedBox(width: 8),
-                  const Text('تیکو', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                  const Text(
+                    'تیکو',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
                 ],
               ),
               const SizedBox(height: 2),
@@ -536,7 +604,11 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
                     hintText: 'جستجو در کارها',
                     prefixIcon: const Center(
                       widthFactor: 1,
-                      child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 16),
+                      child: HugeIcon(
+                        icon: HugeIcons.strokeRoundedSearch01,
+                        size: 24,
+                        strokeWidth: 2.35,
+                      ),
                     ),
                     suffixIcon: searchController.text.isEmpty
                         ? null
@@ -546,7 +618,11 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
                               searchController.clear();
                               onSearchChanged('');
                             },
-                            icon: const FaIcon(FontAwesomeIcons.xmark, size: 16),
+                            icon: const HugeIcon(
+                              icon: HugeIcons.strokeRoundedMultiplicationSign,
+                              size: 24,
+                              strokeWidth: 2.35,
+                            ),
                           ),
                     filled: true,
                     fillColor: AppColors.background,
@@ -633,7 +709,11 @@ class _FilterChipButton extends StatelessWidget {
   final bool selected;
   final VoidCallback onSelected;
 
-  const _FilterChipButton({required this.label, required this.selected, required this.onSelected});
+  const _FilterChipButton({
+    required this.label,
+    required this.selected,
+    required this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -688,7 +768,12 @@ class _TodoSummary extends StatelessWidget {
         children: [
           Row(
             children: [
-              const FaIcon(FontAwesomeIcons.chartSimple, color: AppColors.primary, size: 18),
+              const HugeIcon(
+                icon: HugeIcons.strokeRoundedChartColumn,
+                color: AppColors.primary,
+                size: 24,
+                strokeWidth: 2.35,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -716,17 +801,17 @@ class _TodoSummary extends StatelessWidget {
             runSpacing: 8,
             children: [
               _SummaryPill(
-                icon: FontAwesomeIcons.exclamation,
+                icon: HugeIcons.strokeRoundedExclamationMark,
                 label: '$urgentCount فوری',
                 color: AppColors.priorityUrgent,
               ),
               _SummaryPill(
-                icon: FontAwesomeIcons.triangleExclamation,
+                icon: HugeIcons.strokeRoundedDanger,
                 label: '$overdueCount عقب‌افتاده',
                 color: AppColors.statusPending,
               ),
               _SummaryPill(
-                icon: FontAwesomeIcons.checkDouble,
+                icon: HugeIcons.strokeRoundedTickDouble02,
                 label: '${(progress * 100).round()}٪ پیشرفت',
                 color: AppColors.statusCompleted,
               ),
@@ -739,11 +824,15 @@ class _TodoSummary extends StatelessWidget {
 }
 
 class _SummaryPill extends StatelessWidget {
-  final FaIconData icon;
+  final List<List<dynamic>> icon;
   final String label;
   final Color color;
 
-  const _SummaryPill({required this.icon, required this.label, required this.color});
+  const _SummaryPill({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -756,11 +845,15 @@ class _SummaryPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          FaIcon(icon, size: 14, color: color),
+          HugeIcon(icon: icon, size: 19, color: color, strokeWidth: 2.35),
           const SizedBox(width: 4),
           Text(
             label,
-            style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
@@ -63,14 +63,18 @@ class TodoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final completed = todo.status == TodoStatus.completed;
-    final completedSubtasks = todo.subtasks.where((subtask) => subtask.isCompleted).length;
+    final completedSubtasks = todo.subtasks
+        .where((subtask) => subtask.isCompleted)
+        .length;
     final visibleSubtasks = todo.subtasks.take(3).toList();
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: completed ? AppColors.statusCompleted.withValues(alpha: 0.08) : Colors.white,
+        color: completed
+            ? AppColors.statusCompleted.withValues(alpha: 0.08)
+            : Colors.white,
         border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
         boxShadow: [
           BoxShadow(
@@ -81,7 +85,10 @@ class TodoItem extends StatelessWidget {
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 10,
+        ),
         leading: GestureDetector(
           onTap: onToggle,
           child: AnimatedContainer(
@@ -92,12 +99,21 @@ class TodoItem extends StatelessWidget {
               shape: BoxShape.circle,
               color: completed ? AppColors.statusCompleted : Colors.transparent,
               border: Border.all(
-                color: completed ? AppColors.statusCompleted : Colors.grey.shade400,
+                color: completed
+                    ? AppColors.statusCompleted
+                    : Colors.grey.shade400,
                 width: 2,
               ),
             ),
             child: completed
-                ? const Center(child: FaIcon(FontAwesomeIcons.check, size: 16, color: Colors.white))
+                ? const Center(
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedTick02,
+                      size: 24,
+                      color: Colors.white,
+                      strokeWidth: 2.35,
+                    ),
+                  )
                 : null,
           ),
         ),
@@ -108,7 +124,9 @@ class TodoItem extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            decoration: completed ? TextDecoration.lineThrough : TextDecoration.none,
+            decoration: completed
+                ? TextDecoration.lineThrough
+                : TextDecoration.none,
             color: completed ? AppColors.textSecondary : AppColors.textPrimary,
           ),
         ),
@@ -129,7 +147,9 @@ class TodoItem extends StatelessWidget {
                   _InfoChip(
                     label: _statusLabel(todo.status),
                     textColor: _statusColor(todo.status),
-                    backgroundColor: _statusColor(todo.status).withValues(alpha: 0.12),
+                    backgroundColor: _statusColor(
+                      todo.status,
+                    ).withValues(alpha: 0.12),
                   ),
                   _InfoChip(
                     label: _priorityLabel(todo.priority),
@@ -172,14 +192,15 @@ class TodoItem extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: 2),
                             child: Row(
                               children: [
-                                FaIcon(
-                                  subtask.isCompleted
-                                      ? FontAwesomeIcons.circleCheck
-                                      : FontAwesomeIcons.circle,
-                                  size: 15,
+                                HugeIcon(
+                                  icon: subtask.isCompleted
+                                      ? HugeIcons.strokeRoundedCheckmarkCircle02
+                                      : HugeIcons.strokeRoundedCircle,
+                                  size: 20,
                                   color: subtask.isCompleted
                                       ? AppColors.statusCompleted
                                       : AppColors.textSecondary,
+                                  strokeWidth: 2.35,
                                 ),
                                 const SizedBox(width: 4),
                                 Expanded(
@@ -204,7 +225,8 @@ class TodoItem extends StatelessWidget {
                     ],
                   ),
                 ),
-              if (todo.reminderAt != null && todo.reminderAt!.isAfter(DateTime.now()))
+              if (todo.reminderAt != null &&
+                  todo.reminderAt!.isAfter(DateTime.now()))
                 Padding(
                   padding: const EdgeInsets.only(top: 6),
                   child: _ReminderCountdown(reminderAt: todo.reminderAt!),
@@ -235,9 +257,12 @@ class TodoItem extends StatelessWidget {
               value: 'toggle',
               child: Row(
                 children: [
-                  FaIcon(
-                    completed ? FontAwesomeIcons.rotateLeft : FontAwesomeIcons.check,
-                    size: 16,
+                  HugeIcon(
+                    icon: completed
+                        ? HugeIcons.strokeRoundedRotateLeft01
+                        : HugeIcons.strokeRoundedCheckmarkCircle02,
+                    size: 24,
+                    strokeWidth: 2.35,
                   ),
                   const SizedBox(width: 8),
                   Text(completed ? 'بازگردانی' : 'انجام شد'),
@@ -248,7 +273,11 @@ class TodoItem extends StatelessWidget {
               value: 'edit',
               child: Row(
                 children: [
-                  FaIcon(FontAwesomeIcons.penToSquare, size: 16),
+                  HugeIcon(
+                    icon: HugeIcons.strokeRoundedPencilEdit02,
+                    size: 24,
+                    strokeWidth: 2.35,
+                  ),
                   SizedBox(width: 8),
                   Text('ویرایش'),
                 ],
@@ -258,7 +287,11 @@ class TodoItem extends StatelessWidget {
               value: 'archive',
               child: Row(
                 children: [
-                  const FaIcon(FontAwesomeIcons.boxArchive, size: 16),
+                  const HugeIcon(
+                    icon: HugeIcons.strokeRoundedArchive,
+                    size: 24,
+                    strokeWidth: 2.35,
+                  ),
                   const SizedBox(width: 8),
                   Text(todo.isArchived ? 'خروج از آرشیو' : 'آرشیو'),
                 ],
@@ -269,7 +302,12 @@ class TodoItem extends StatelessWidget {
               value: 'delete',
               child: Row(
                 children: [
-                  FaIcon(FontAwesomeIcons.trashCan, size: 16, color: Colors.red),
+                  HugeIcon(
+                    icon: HugeIcons.strokeRoundedDelete02,
+                    size: 24,
+                    color: Colors.red,
+                    strokeWidth: 2.35,
+                  ),
                   SizedBox(width: 8),
                   Text('حذف', style: TextStyle(color: Colors.red)),
                 ],
@@ -317,16 +355,27 @@ class _InfoChip extends StatelessWidget {
   final Color textColor;
   final Color backgroundColor;
 
-  const _InfoChip({required this.label, required this.textColor, required this.backgroundColor});
+  const _InfoChip({
+    required this.label,
+    required this.textColor,
+    required this.backgroundColor,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(color: backgroundColor, borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Text(
         label,
-        style: TextStyle(color: textColor, fontSize: 11, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          color: textColor,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -379,7 +428,12 @@ class _ReminderCountdownState extends State<_ReminderCountdown> {
 
         return Row(
           children: [
-            const FaIcon(FontAwesomeIcons.bell, size: 11, color: AppColors.primary),
+            const HugeIcon(
+              icon: HugeIcons.strokeRoundedBellDot,
+              size: 18,
+              color: AppColors.primary,
+              strokeWidth: 2.35,
+            ),
             const SizedBox(width: 4),
             Text(_format(d), style: const TextStyle(fontSize: 11)),
           ],

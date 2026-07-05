@@ -12,7 +12,7 @@ class AccountSettingsController extends ChangeNotifier {
   final SupabaseClient _client;
 
   AppUser? _currentUser;
-  Color _primaryColor = const Color(0xFF6C63FF);
+  Color _primaryColor = const Color(0xFF2463EB);
   ThemeMode _themeMode = ThemeMode.system;
   bool _hideCompleted = false;
   bool _isLoaded = false;
@@ -33,7 +33,9 @@ class AccountSettingsController extends ChangeNotifier {
     final themeModeValue = prefs.getString(_themeModeKey);
 
     if (colorValue != null) {
-      _primaryColor = Color(int.tryParse(colorValue) ?? _primaryColor.toARGB32());
+      _primaryColor = Color(
+        int.tryParse(colorValue) ?? _primaryColor.toARGB32(),
+      );
     }
 
     if (themeModeValue != null) {
@@ -85,7 +87,10 @@ class AccountSettingsController extends ChangeNotifier {
     }
   }
 
-  Future<String?> signIn({required String email, required String password}) async {
+  Future<String?> signIn({
+    required String email,
+    required String password,
+  }) async {
     final normalizedEmail = email.trim().toLowerCase();
 
     if (!normalizedEmail.contains('@')) return 'ایمیل معتبر نیست';
@@ -160,7 +165,10 @@ class AccountSettingsController extends ChangeNotifier {
 
     return AppUser(
       id: user.id,
-      name: metadata?['name'] as String? ?? user.email?.split('@').first ?? 'کاربر',
+      name:
+          metadata?['name'] as String? ??
+          user.email?.split('@').first ??
+          'کاربر',
       email: user.email ?? '',
     );
   }
@@ -172,7 +180,8 @@ class AccountSettingsController extends ChangeNotifier {
       return 'ایمیل یا رمز عبور اشتباه است';
     }
 
-    if (lower.contains('already registered') || lower.contains('user already registered')) {
+    if (lower.contains('already registered') ||
+        lower.contains('user already registered')) {
       return 'این ایمیل قبلاً ثبت شده است';
     }
 

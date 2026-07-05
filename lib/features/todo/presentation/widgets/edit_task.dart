@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
@@ -222,9 +222,10 @@ Future<void> showEditTaskDialog({
                                 setState(() => selectedDueAt = picked);
                               }
                             },
-                            icon: const FaIcon(
-                              FontAwesomeIcons.calendarDays,
-                              size: 16,
+                            icon: const HugeIcon(
+                              icon: HugeIcons.strokeRoundedCalendar03,
+                              size: 24,
+                              strokeWidth: 2.35,
                             ),
                             label: Text(
                               selectedDueAt == null
@@ -238,9 +239,10 @@ Future<void> showEditTaskDialog({
                             tooltip: 'حذف سررسید',
                             onPressed: () =>
                                 setState(() => selectedDueAt = null),
-                            icon: const FaIcon(
-                              FontAwesomeIcons.xmark,
-                              size: 16,
+                            icon: const HugeIcon(
+                              icon: HugeIcons.strokeRoundedMultiplicationSign,
+                              size: 24,
+                              strokeWidth: 2.35,
                             ),
                           ),
                       ],

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../core/account/account_settings_controller.dart';
 import '../../../../core/di/injection.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  final bool showAppBar;
+  final bool showQuickAccess;
+
+  const SettingsPage({
+    super.key,
+    this.showAppBar = true,
+    this.showQuickAccess = true,
+  });
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -16,7 +23,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final _nameController = TextEditingController();
 
   static const _colors = [
-    Color(0xFF6C63FF),
+    Color(0xFF2463EB),
     Color(0xFF2563EB),
     Color(0xFF00A676),
     Color(0xFFEF4444),
@@ -60,7 +67,9 @@ class _SettingsPageState extends State<SettingsPage> {
         final user = settings.currentUser;
 
         return Scaffold(
-          appBar: AppBar(title: const Text('تنظیمات')),
+          appBar: widget.showAppBar
+              ? AppBar(title: const Text('تنظیمات'))
+              : null,
           body: SafeArea(
             child: Center(
               child: ConstrainedBox(
@@ -97,7 +106,11 @@ class _SettingsPageState extends State<SettingsPage> {
                               labelText: 'نام نمایشی',
                               prefixIcon: Center(
                                 widthFactor: 1,
-                                child: FaIcon(FontAwesomeIcons.user, size: 18),
+                                child: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedUser,
+                                  size: 24,
+                                  strokeWidth: 2.35,
+                                ),
                               ),
                             ),
                           ),
@@ -106,9 +119,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             width: double.infinity,
                             child: ElevatedButton.icon(
                               onPressed: () => _saveName(settings),
-                              icon: const FaIcon(
-                                FontAwesomeIcons.floppyDisk,
-                                size: 16,
+                              icon: const HugeIcon(
+                                icon: HugeIcons.strokeRoundedFloppyDisk,
+                                size: 24,
+                                strokeWidth: 2.35,
                               ),
                               label: const Text('ذخیره نام'),
                             ),
@@ -170,17 +184,29 @@ class _SettingsPageState extends State<SettingsPage> {
                             segments: const [
                               ButtonSegment(
                                 value: ThemeMode.system,
-                                icon: FaIcon(FontAwesomeIcons.circleHalfStroke),
+                                icon: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedSettings02,
+                                  size: 28,
+                                  strokeWidth: 2.35,
+                                ),
                                 label: Text('سیستم'),
                               ),
                               ButtonSegment(
                                 value: ThemeMode.light,
-                                icon: FaIcon(FontAwesomeIcons.sun),
+                                icon: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedSun03,
+                                  size: 28,
+                                  strokeWidth: 2.35,
+                                ),
                                 label: Text('روشن'),
                               ),
                               ButtonSegment(
                                 value: ThemeMode.dark,
-                                icon: FaIcon(FontAwesomeIcons.moon),
+                                icon: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedMoon,
+                                  size: 28,
+                                  strokeWidth: 2.35,
+                                ),
                                 label: Text('تاریک'),
                               ),
                             ],
@@ -206,20 +232,31 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     const SizedBox(height: 16),
                     _Section(
-                      title: 'دسترسی سریع',
+                      title: 'حساب',
                       child: Column(
                         children: [
+                          if (widget.showQuickAccess)
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: const HugeIcon(
+                                icon: HugeIcons.strokeRoundedTask01,
+                                size: 28,
+                                strokeWidth: 2.35,
+                              ),
+                              title: const Text('بازگشت به کارها'),
+                              trailing: const HugeIcon(
+                                icon: HugeIcons.strokeRoundedArrowLeft01,
+                                size: 28,
+                                strokeWidth: 2.35,
+                              ),
+                              onTap: () => context.go('/home'),
+                            ),
                           ListTile(
                             contentPadding: EdgeInsets.zero,
-                            leading: const FaIcon(FontAwesomeIcons.listCheck),
-                            title: const Text('بازگشت به کارها'),
-                            trailing: const FaIcon(FontAwesomeIcons.angleLeft),
-                            onTap: () => context.go('/home'),
-                          ),
-                          ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: const FaIcon(
-                              FontAwesomeIcons.rightFromBracket,
+                            leading: const HugeIcon(
+                              icon: HugeIcons.strokeRoundedLogout03,
+                              size: 28,
+                              strokeWidth: 2.35,
                             ),
                             title: const Text('خروج از حساب'),
                             textColor: Colors.red,

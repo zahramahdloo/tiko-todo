@@ -9,6 +9,7 @@ class DbConstants {
   static const String priority = 'priority';
   static const String reminderAt = 'reminder_at';
   static const String dueAt = 'due_at';
+  static const String completedAt = 'completed_at';
   static const String category = 'category';
   static const String subtasks = 'subtasks';
   static const String isArchived = 'is_archived';

@@ -6,6 +6,7 @@ create table if not exists public.todos (
   priority text not null default 'normal',
   reminder_at timestamptz,
   due_at timestamptz,
+  completed_at timestamptz,
   category text not null default 'Personal',
   subtasks jsonb not null default '[]'::jsonb,
   is_archived boolean not null default false,

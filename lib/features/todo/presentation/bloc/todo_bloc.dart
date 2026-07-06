@@ -41,7 +41,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   Future<void> _add(AddTodo event, Emitter<TodoState> emit) async {
     try {
       _emitSaving(emit);
-      await addTodo(event.todo);
+      await addTodo(_withCompletionDate(event.todo));
       final todos = await getTodos();
       emit(TodoLoaded(todos));
     } catch (e) {
@@ -63,10 +63,11 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   Future<void> _toggle(ToggleTodo event, Emitter<TodoState> emit) async {
     try {
       _emitSaving(emit);
+      final completed = event.todo.status != TodoStatus.completed;
       final updated = event.todo.copyWith(
-        status: event.todo.status == TodoStatus.completed
-            ? TodoStatus.pending
-            : TodoStatus.completed,
+        status: completed ? TodoStatus.completed : TodoStatus.pending,
+        completedAt: completed ? DateTime.now() : null,
+        clearCompletedAt: !completed,
       );
       await updateTodo(updated);
       final todos = await getTodos();
@@ -81,7 +82,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   Future<void> _update(UpdateTodo event, Emitter<TodoState> emit) async {
     try {
       _emitSaving(emit);
-      await updateTodo(event.todo);
+      await updateTodo(_withCompletionDate(event.todo));
       final todos = await getTodos();
       emit(TodoLoaded(todos));
     } catch (e) {
@@ -101,5 +102,15 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     if (currentState is TodoLoaded) {
       emit(TodoLoaded(currentState.todos, isSaving: true));
     }
+  }
+
+  Todo _withCompletionDate(Todo todo) {
+    if (todo.status == TodoStatus.completed) {
+      return todo.completedAt == null
+          ? todo.copyWith(completedAt: DateTime.now())
+          : todo;
+    }
+
+    return todo.copyWith(clearCompletedAt: true);
   }
 }

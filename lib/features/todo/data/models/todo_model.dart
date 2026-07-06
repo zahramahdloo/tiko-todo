@@ -11,6 +11,7 @@ class TodoModel {
   final String priority;
   final int? reminderAt;
   final int? dueAt;
+  final int? completedAt;
   final String category;
   final String subtasks;
   final bool isArchived;
@@ -22,6 +23,7 @@ class TodoModel {
     required this.priority,
     this.reminderAt,
     this.dueAt,
+    this.completedAt,
     this.category = 'شخصی',
     this.subtasks = '[]',
     this.isArchived = false,
@@ -35,6 +37,7 @@ class TodoModel {
       priority: map['priority'] as String? ?? TodoPriority.normal.name,
       reminderAt: _parseDateToMillis(map['reminder_at']),
       dueAt: _parseDateToMillis(map['due_at']),
+      completedAt: _parseDateToMillis(map['completed_at']),
       category: map['category'] as String? ?? 'شخصی',
       subtasks: _normalizeSubtasksToString(map['subtasks']),
       isArchived: _parseBool(map['is_archived']),
@@ -48,6 +51,7 @@ class TodoModel {
       'priority': priority,
       'reminder_at': _millisToIsoString(reminderAt),
       'due_at': _millisToIsoString(dueAt),
+      'completed_at': _millisToIsoString(completedAt),
       'category': category,
       'subtasks': _subtasksForSupabase(subtasks),
       'is_archived': isArchived,
@@ -66,8 +70,13 @@ class TodoModel {
       title: title,
       status: _statusFromString(status),
       priority: _priorityFromString(priority),
-      reminderAt: reminderAt == null ? null : DateTime.fromMillisecondsSinceEpoch(reminderAt!),
+      reminderAt: reminderAt == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(reminderAt!),
       dueAt: dueAt == null ? null : DateTime.fromMillisecondsSinceEpoch(dueAt!),
+      completedAt: completedAt == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(completedAt!),
       category: category,
       subtasks: _subtasksToEntity(subtasks),
       isArchived: isArchived,
@@ -82,10 +91,16 @@ class TodoModel {
       priority: todo.priority.name,
       reminderAt: todo.reminderAt?.millisecondsSinceEpoch,
       dueAt: todo.dueAt?.millisecondsSinceEpoch,
+      completedAt: todo.completedAt?.millisecondsSinceEpoch,
       category: todo.category,
       subtasks: jsonEncode(
         todo.subtasks
-            .map((subtask) => {'title': subtask.title, 'isCompleted': subtask.isCompleted})
+            .map(
+              (subtask) => {
+                'title': subtask.title,
+                'isCompleted': subtask.isCompleted,
+              },
+            )
             .toList(),
       ),
       isArchived: todo.isArchived,
@@ -169,7 +184,10 @@ class TodoModel {
       final decoded = jsonDecode(value);
 
       if (decoded is List) {
-        return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+        return decoded
+            .whereType<Map>()
+            .map((item) => Map<String, dynamic>.from(item))
+            .toList();
       }
 
       return [];

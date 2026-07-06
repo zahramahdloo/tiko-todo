@@ -4,6 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/jalali_date.dart';
 import '../../domain/entities/todo.dart';
 
 class TodoItem extends StatelessWidget {
@@ -346,7 +347,7 @@ class TodoItem extends StatelessWidget {
   }
 
   static String _formatDate(DateTime date) {
-    return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+    return formatJalaliDate(date);
   }
 }
 

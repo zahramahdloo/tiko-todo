@@ -27,32 +27,34 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/icons/app_icon.png', width: 80, height: 80)
-                .animate()
-                .scale(
-                  begin: const Offset(0.0, 0.0),
-                  end: const Offset(1.0, 1.0),
-                  duration: 800.ms,
-                  curve: Curves.elasticOut,
-                )
-                .fadeIn(duration: 600.ms),
-            const SizedBox(height: 20),
-            const Text(
-                  'تیکو',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'IranYekan',
-                  ),
-                )
-                .animate()
-                .fadeIn(delay: 600.ms, duration: 500.ms)
-                .slideY(begin: 0.3, end: 0, delay: 600.ms, duration: 500.ms),
-          ],
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/icons/app_icon.png', width: 80, height: 80)
+                  .animate()
+                  .scale(
+                    begin: const Offset(0.0, 0.0),
+                    end: const Offset(1.0, 1.0),
+                    duration: 800.ms,
+                    curve: Curves.elasticOut,
+                  )
+                  .fadeIn(duration: 600.ms),
+              const SizedBox(height: 20),
+              const Text(
+                    'تیکو',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'IranYekan',
+                    ),
+                  )
+                  .animate()
+                  .fadeIn(delay: 600.ms, duration: 500.ms)
+                  .slideY(begin: 0.3, end: 0, delay: 600.ms, duration: 500.ms),
+            ],
+          ),
         ),
       ),
     );

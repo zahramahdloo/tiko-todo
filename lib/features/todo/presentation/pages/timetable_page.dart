@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -5,6 +7,7 @@ import 'package:hugeicons/hugeicons.dart';
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/responsive_layout.dart';
 import '../../domain/entities/todo.dart';
 import '../bloc/todo_bloc.dart';
 import '../bloc/todo_state.dart';
@@ -27,75 +30,69 @@ class _TimetablePageState extends State<TimetablePage> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final horizontalPadding = width >= 720 ? 24.0 : 16.0;
-    final maxWidth = width >= 840 ? 760.0 : 720.0;
+    final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
     final weekDays = _visibleWeek(_selectedDate);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F4),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: maxWidth),
-            child: Column(
-              children: [
-                _TimetableHeader(
-                  selectedDate: _selectedDate,
-                  weekDays: weekDays,
-                  onDateSelected: (date) {
-                    setState(() => _selectedDate = _dateOnly(date));
+        child: ResponsiveContent(
+          child: Column(
+            children: [
+              _TimetableHeader(
+                selectedDate: _selectedDate,
+                weekDays: weekDays,
+                onDateSelected: (date) {
+                  setState(() => _selectedDate = _dateOnly(date));
+                },
+              ),
+              Expanded(
+                child: BlocBuilder<TodoBloc, TodoState>(
+                  builder: (context, state) {
+                    if (state is TodoLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (state is TodoError) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            state.message,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (state is TodoLoaded) {
+                      final todos = _todosForDate(state.todos, _selectedDate);
+
+                      if (todos.isEmpty) {
+                        return const _EmptyTimetable();
+                      }
+
+                      return ListView.separated(
+                        padding: EdgeInsets.fromLTRB(
+                          horizontalPadding,
+                          16,
+                          horizontalPadding,
+                          24,
+                        ),
+                        itemCount: todos.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 10),
+                        itemBuilder: (context, index) {
+                          return _TimelineTaskCard(todo: todos[index]);
+                        },
+                      );
+                    }
+
+                    return const SizedBox.shrink();
                   },
                 ),
-                Expanded(
-                  child: BlocBuilder<TodoBloc, TodoState>(
-                    builder: (context, state) {
-                      if (state is TodoLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      if (state is TodoError) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Text(
-                              state.message,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        );
-                      }
-
-                      if (state is TodoLoaded) {
-                        final todos = _todosForDate(state.todos, _selectedDate);
-
-                        if (todos.isEmpty) {
-                          return const _EmptyTimetable();
-                        }
-
-                        return ListView.separated(
-                          padding: EdgeInsets.fromLTRB(
-                            horizontalPadding,
-                            16,
-                            horizontalPadding,
-                            24,
-                          ),
-                          itemCount: todos.length,
-                          separatorBuilder: (_, _) =>
-                              const SizedBox(height: 10),
-                          itemBuilder: (context, index) {
-                            return _TimelineTaskCard(todo: todos[index]);
-                          },
-                        );
-                      }
-
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -117,13 +114,14 @@ class _TimetableHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final jalali = _JalaliDate.fromGregorian(selectedDate);
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(8)),
+      decoration: BoxDecoration(
+        color: primary,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(8)),
       ),
       child: Column(
         children: [
@@ -206,9 +204,7 @@ class _TimetableHeader extends StatelessWidget {
                           child: Text(
                             '${day.day}',
                             style: TextStyle(
-                              color: selected
-                                  ? AppColors.primary
-                                  : Colors.white,
+                              color: selected ? primary : Colors.white,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -335,6 +331,14 @@ class _TimelineTaskCard extends StatelessWidget {
                           ),
                       ],
                     ),
+                    if (time != null) ...[
+                      const SizedBox(height: 12),
+                      _DeadlineCountdown(
+                        target: time,
+                        completed: todo.status == TodoStatus.completed,
+                        isReminder: todo.reminderAt != null,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -373,6 +377,72 @@ class _Detail extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _DeadlineCountdown extends StatelessWidget {
+  final DateTime target;
+  final bool completed;
+  final bool isReminder;
+
+  const _DeadlineCountdown({
+    required this.target,
+    required this.completed,
+    required this.isReminder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = completed
+        ? AppColors.statusCompleted
+        : target.isBefore(DateTime.now())
+        ? AppColors.priorityUrgent
+        : AppColors.primary;
+
+    return StreamBuilder<Duration>(
+      stream: Stream.periodic(
+        const Duration(seconds: 1),
+        (_) => target.difference(DateTime.now()),
+      ),
+      initialData: target.difference(DateTime.now()),
+      builder: (context, snapshot) {
+        final remaining = snapshot.data ?? Duration.zero;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedClock01,
+                size: 18,
+                color: color,
+                strokeWidth: 2.35,
+              ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  completed
+                      ? 'انجام شده'
+                      : _formatCountdown(remaining, isReminder: isReminder),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -427,7 +497,7 @@ List<DateTime> _visibleWeek(DateTime selectedDate) {
 List<Todo> _todosForDate(List<Todo> todos, DateTime date) {
   final visible = todos.where((todo) {
     if (todo.isArchived) return false;
-    final taskDate = todo.dueAt ?? todo.reminderAt;
+    final taskDate = _taskDate(todo);
     return taskDate != null && _isSameDay(taskDate, date);
   }).toList();
 
@@ -465,6 +535,33 @@ String _formatTime(DateTime? date) {
   if (date == null) return 'تمام روز';
   if (date.hour == 0 && date.minute == 0) return 'تمام روز';
   return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+}
+
+String _formatCountdown(Duration remaining, {required bool isReminder}) {
+  final targetLabel = isReminder ? 'یادآوری' : 'سررسید';
+
+  if (remaining.isNegative) {
+    return '$targetLabel گذشته';
+  }
+
+  final days = remaining.inDays;
+  final hours = remaining.inHours.remainder(24);
+  final minutes = remaining.inMinutes.remainder(60);
+  final seconds = remaining.inSeconds.remainder(60);
+
+  if (days > 0) {
+    return '$days روز و $hours ساعت مانده تا $targetLabel';
+  }
+
+  if (hours > 0) {
+    return '$hours ساعت و $minutes دقیقه مانده تا $targetLabel';
+  }
+
+  if (minutes > 0) {
+    return '$minutes دقیقه و $seconds ثانیه مانده تا $targetLabel';
+  }
+
+  return '$seconds ثانیه مانده تا $targetLabel';
 }
 
 String _formatJalali(DateTime date) {

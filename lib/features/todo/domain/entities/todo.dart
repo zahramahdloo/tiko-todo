@@ -27,6 +27,7 @@ class Todo extends Equatable {
   final TodoPriority priority;
   final DateTime? reminderAt;
   final DateTime? dueAt;
+  final DateTime? completedAt;
   final String category;
   final List<TodoSubtask> subtasks;
   final bool isArchived;
@@ -38,6 +39,7 @@ class Todo extends Equatable {
     required this.priority,
     this.reminderAt,
     this.dueAt,
+    this.completedAt,
     this.category = 'شخصی',
     this.subtasks = const [],
     this.isArchived = false,
@@ -50,11 +52,13 @@ class Todo extends Equatable {
     TodoPriority? priority,
     DateTime? reminderAt,
     DateTime? dueAt,
+    DateTime? completedAt,
     String? category,
     List<TodoSubtask>? subtasks,
     bool? isArchived,
     bool clearReminder = false,
     bool clearDueAt = false,
+    bool clearCompletedAt = false,
   }) {
     return Todo(
       id: id ?? this.id,
@@ -63,6 +67,7 @@ class Todo extends Equatable {
       priority: priority ?? this.priority,
       reminderAt: clearReminder ? null : (reminderAt ?? this.reminderAt),
       dueAt: clearDueAt ? null : (dueAt ?? this.dueAt),
+      completedAt: clearCompletedAt ? null : (completedAt ?? this.completedAt),
       category: category ?? this.category,
       subtasks: subtasks ?? this.subtasks,
       isArchived: isArchived ?? this.isArchived,
@@ -77,6 +82,7 @@ class Todo extends Equatable {
     priority,
     reminderAt,
     dueAt,
+    completedAt,
     category,
     subtasks,
     isArchived,

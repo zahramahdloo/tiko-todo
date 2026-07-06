@@ -24,6 +24,13 @@ final appRouter = GoRouter(
       path: '/settings',
       builder: (context, state) => BlocProvider<TodoBloc>(
         create: (_) => sl<TodoBloc>()..add(const LoadTodo()),
+        child: const MainShellPage(initialIndex: 4),
+      ),
+    ),
+    GoRoute(
+      path: '/archive',
+      builder: (context, state) => BlocProvider<TodoBloc>(
+        create: (_) => sl<TodoBloc>()..add(const LoadTodo()),
         child: const MainShellPage(initialIndex: 3),
       ),
     ),

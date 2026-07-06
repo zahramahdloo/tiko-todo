@@ -8,6 +8,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
+import '../../../../core/widgets/responsive_layout.dart';
 import '../../domain/entities/todo.dart';
 import '../bloc/todo_bloc.dart';
 import '../bloc/todo_event.dart';
@@ -242,9 +243,7 @@ class _TodoPageState extends State<TodoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final horizontalPadding = MediaQuery.sizeOf(context).width >= 720
-        ? 24.0
-        : 16.0;
+    final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
 
     return Scaffold(
       appBar: PreferredSize(
@@ -264,258 +263,254 @@ class _TodoPageState extends State<TodoPage> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openAddSheet,
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        child: const HugeIcon(
-          icon: HugeIcons.strokeRoundedPlusSign,
-          size: 24,
-          strokeWidth: 2.35,
-        ),
-      ),
-      body: AnimatedBuilder(
-        animation: sl<AccountSettingsController>(),
-        builder: (context, _) {
-          return BlocBuilder<TodoBloc, TodoState>(
-            builder: (context, state) {
-              if (state is TodoLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+      body: SafeArea(
+        top: false,
+        child: AnimatedBuilder(
+          animation: sl<AccountSettingsController>(),
+          builder: (context, _) {
+            return BlocBuilder<TodoBloc, TodoState>(
+              builder: (context, state) {
+                if (state is TodoLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-              if (state is TodoError) {
-                return Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const HugeIcon(
-                        icon: HugeIcons.strokeRoundedAlertCircle,
-                        color: Colors.red,
-                        size: 64,
-                        strokeWidth: 2.35,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        state.message,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () =>
-                            context.read<TodoBloc>().add(const LoadTodo()),
-                        child: const Text('تلاش مجدد'),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              if (state is TodoLoaded) {
-                final visibleTodos = _visibleTodos(state.todos);
-                final hasActiveFilter =
-                    _filter != _TodoFilter.all ||
-                    _searchController.text.trim().isNotEmpty;
-
-                if (state.todos.isEmpty) {
-                  return const Center(
+                if (state is TodoError) {
+                  return Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        HugeIcon(
-                          icon: HugeIcons.strokeRoundedTask01,
-                          size: 80,
-                          color: Colors.grey,
+                        const HugeIcon(
+                          icon: HugeIcons.strokeRoundedAlertCircle,
+                          color: Colors.red,
+                          size: 64,
                           strokeWidth: 2.35,
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         Text(
-                          'هیچ کاری وجود ندارد\nروی + بزن تا اولین کار رو اضافه کنی',
+                          state.message,
+                          style: const TextStyle(color: Colors.red),
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () =>
+                              context.read<TodoBloc>().add(const LoadTodo()),
+                          child: const Text('تلاش مجدد'),
                         ),
                       ],
                     ),
                   );
                 }
 
-                if (visibleTodos.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
+                if (state is TodoLoaded) {
+                  final visibleTodos = _visibleTodos(state.todos);
+                  final hasActiveFilter =
+                      _filter != _TodoFilter.all ||
+                      _searchController.text.trim().isNotEmpty;
+
+                  if (state.todos.isEmpty) {
+                    return const Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const HugeIcon(
-                            icon: HugeIcons.strokeRoundedSearchMinus,
+                          HugeIcon(
+                            icon: HugeIcons.strokeRoundedTask01,
                             size: 80,
                             color: Colors.grey,
                             strokeWidth: 2.35,
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           Text(
-                            hasActiveFilter
-                                ? 'کاری با این جستجو یا فیلتر پیدا نشد'
-                                : 'کاری برای نمایش وجود ندارد',
+                            'هیچ کاری وجود ندارد\nروی + بزن تا اولین کار رو اضافه کنی',
                             textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.grey),
+                            style: TextStyle(color: Colors.grey),
                           ),
                         ],
                       ),
-                    ),
-                  );
-                }
+                    );
+                  }
 
-                final completedCount = state.todos
-                    .where((todo) => todo.status == TodoStatus.completed)
-                    .length;
-                final urgentCount = state.todos
-                    .where(
-                      (todo) =>
-                          !todo.isArchived &&
-                          todo.priority == TodoPriority.urgent,
-                    )
-                    .length;
-                final overdueCount = state.todos.where(_isOverdue).length;
-
-                return Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 720),
-                        child: CustomScrollView(
-                          slivers: [
-                            // === تولبار دکمه‌ها (تازه‌سازی / کار جدید / تنظیمات / مرتب‌سازی) ===
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                child: Row(
-                                  children: [
-                                    IconButton(
-                                      tooltip: 'تازه‌سازی',
-                                      onPressed: () => context
-                                          .read<TodoBloc>()
-                                          .add(const LoadTodo()),
-                                      icon: const HugeIcon(
-                                        icon: HugeIcons.strokeRoundedRefresh,
-                                        size: 23,
-                                        strokeWidth: 2.35,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      tooltip: 'کار جدید',
-                                      onPressed: _openAddSheet,
-                                      icon: const HugeIcon(
-                                        icon: HugeIcons.strokeRoundedPlusSign,
-                                        size: 23,
-                                        strokeWidth: 2.35,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    PopupMenuButton<_TodoSort>(
-                                      tooltip: 'مرتب‌سازی',
-                                      initialValue: _sort,
-                                      onSelected: (value) {
-                                        setState(() => _sort = value);
-                                      },
-                                      icon: const HugeIcon(
-                                        icon: HugeIcons.strokeRoundedSorting03,
-                                        size: 23,
-                                        strokeWidth: 2.35,
-                                      ),
-                                      itemBuilder: (context) => const [
-                                        PopupMenuItem(
-                                          value: _TodoSort.newest,
-                                          child: Text('جدیدترین'),
-                                        ),
-                                        PopupMenuItem(
-                                          value: _TodoSort.oldest,
-                                          child: Text('قدیمی‌ترین'),
-                                        ),
-                                        PopupMenuItem(
-                                          value: _TodoSort.priority,
-                                          child: Text('اولویت'),
-                                        ),
-                                        PopupMenuItem(
-                                          value: _TodoSort.dueDate,
-                                          child: Text('نزدیک‌ترین سررسید'),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
+                  if (visibleTodos.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const HugeIcon(
+                              icon: HugeIcons.strokeRoundedSearchMinus,
+                              size: 80,
+                              color: Colors.grey,
+                              strokeWidth: 2.35,
                             ),
-
-                            // === کارت خلاصه وضعیت ===
-                            SliverPadding(
-                              padding: EdgeInsets.fromLTRB(
-                                horizontalPadding,
-                                12,
-                                horizontalPadding,
-                                8,
-                              ),
-                              sliver: SliverToBoxAdapter(
-                                child: _TodoSummary(
-                                  totalCount: state.todos.length,
-                                  completedCount: completedCount,
-                                  urgentCount: urgentCount,
-                                  overdueCount: overdueCount,
-                                ),
-                              ),
-                            ),
-
-                            // === لیست کارها ===
-                            SliverPadding(
-                              padding: EdgeInsets.fromLTRB(
-                                horizontalPadding,
-                                8,
-                                horizontalPadding,
-                                96,
-                              ),
-                              sliver: SliverList.separated(
-                                itemCount: visibleTodos.length,
-                                separatorBuilder: (_, _) =>
-                                    const SizedBox(height: 12),
-                                itemBuilder: (context, index) {
-                                  final todo = visibleTodos[index];
-                                  return TodoItem(
-                                    todo: todo,
-                                    onToggle: () => context
-                                        .read<TodoBloc>()
-                                        .add(ToggleTodo(todo)),
-                                    onEdit: () => _openEditDialog(todo),
-                                    onDelete: () => _confirmDelete(todo),
-                                    onArchive: () => _toggleArchive(todo),
-                                    onToggleSubtask: (subtaskIndex) =>
-                                        _toggleSubtask(todo, subtaskIndex),
-                                  );
-                                },
-                              ),
+                            const SizedBox(height: 12),
+                            Text(
+                              hasActiveFilter
+                                  ? 'کاری با این جستجو یا فیلتر پیدا نشد'
+                                  : 'کاری برای نمایش وجود ندارد',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: Colors.grey),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    if (state.isSaving)
-                      const Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: LinearProgressIndicator(minHeight: 2),
-                      ),
-                  ],
-                );
-              }
+                    );
+                  }
 
-              return const SizedBox();
-            },
-          );
-        },
+                  final completedCount = state.todos
+                      .where((todo) => todo.status == TodoStatus.completed)
+                      .length;
+                  final urgentCount = state.todos
+                      .where(
+                        (todo) =>
+                            !todo.isArchived &&
+                            todo.priority == TodoPriority.urgent,
+                      )
+                      .length;
+                  final overdueCount = state.todos.where(_isOverdue).length;
+
+                  return Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxWidth: ResponsiveLayout.defaultMaxWidth,
+                          ),
+                          child: CustomScrollView(
+                            slivers: [
+                              // === تولبار دکمه‌ها (تازه‌سازی / کار جدید / تنظیمات / مرتب‌سازی) ===
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      IconButton(
+                                        tooltip: 'تازه‌سازی',
+                                        onPressed: () => context
+                                            .read<TodoBloc>()
+                                            .add(const LoadTodo()),
+                                        icon: const HugeIcon(
+                                          icon: HugeIcons.strokeRoundedRefresh,
+                                          size: 23,
+                                          strokeWidth: 2.35,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        tooltip: 'کار جدید',
+                                        onPressed: _openAddSheet,
+                                        icon: const HugeIcon(
+                                          icon: HugeIcons.strokeRoundedPlusSign,
+                                          size: 23,
+                                          strokeWidth: 2.35,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      PopupMenuButton<_TodoSort>(
+                                        tooltip: 'مرتب‌سازی',
+                                        initialValue: _sort,
+                                        onSelected: (value) {
+                                          setState(() => _sort = value);
+                                        },
+                                        icon: const HugeIcon(
+                                          icon:
+                                              HugeIcons.strokeRoundedSorting03,
+                                          size: 23,
+                                          strokeWidth: 2.35,
+                                        ),
+                                        itemBuilder: (context) => const [
+                                          PopupMenuItem(
+                                            value: _TodoSort.newest,
+                                            child: Text('جدیدترین'),
+                                          ),
+                                          PopupMenuItem(
+                                            value: _TodoSort.oldest,
+                                            child: Text('قدیمی‌ترین'),
+                                          ),
+                                          PopupMenuItem(
+                                            value: _TodoSort.priority,
+                                            child: Text('اولویت'),
+                                          ),
+                                          PopupMenuItem(
+                                            value: _TodoSort.dueDate,
+                                            child: Text('نزدیک‌ترین سررسید'),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              // === کارت خلاصه وضعیت ===
+                              SliverPadding(
+                                padding: EdgeInsets.fromLTRB(
+                                  horizontalPadding,
+                                  12,
+                                  horizontalPadding,
+                                  8,
+                                ),
+                                sliver: SliverToBoxAdapter(
+                                  child: _TodoSummary(
+                                    totalCount: state.todos.length,
+                                    completedCount: completedCount,
+                                    urgentCount: urgentCount,
+                                    overdueCount: overdueCount,
+                                  ),
+                                ),
+                              ),
+
+                              // === لیست کارها ===
+                              SliverPadding(
+                                padding: EdgeInsets.fromLTRB(
+                                  horizontalPadding,
+                                  8,
+                                  horizontalPadding,
+                                  96,
+                                ),
+                                sliver: SliverList.separated(
+                                  itemCount: visibleTodos.length,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(height: 12),
+                                  itemBuilder: (context, index) {
+                                    final todo = visibleTodos[index];
+                                    return TodoItem(
+                                      todo: todo,
+                                      onToggle: () => context
+                                          .read<TodoBloc>()
+                                          .add(ToggleTodo(todo)),
+                                      onEdit: () => _openEditDialog(todo),
+                                      onDelete: () => _confirmDelete(todo),
+                                      onArchive: () => _toggleArchive(todo),
+                                      onToggleSubtask: (subtaskIndex) =>
+                                          _toggleSubtask(todo, subtaskIndex),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (state.isSaving)
+                        const Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: LinearProgressIndicator(minHeight: 2),
+                        ),
+                    ],
+                  );
+                }
+
+                return const SizedBox();
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -545,6 +540,8 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
     return AppBar(
       toolbarHeight: 72,
       centerTitle: true,
@@ -553,10 +550,10 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           tooltip: 'تنظیمات',
           onPressed: () => context.go('/settings'),
-          icon: const HugeIcon(
+          icon: HugeIcon(
             icon: HugeIcons.strokeRoundedSettings02,
             size: 24,
-            color: AppColors.primary,
+            color: primary,
             strokeWidth: 2.35,
           ),
         ),
@@ -636,7 +633,7 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: AppColors.primary),
+                      borderSide: BorderSide(color: primary),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
@@ -717,21 +714,23 @@ class _FilterChipButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
     return Padding(
       padding: const EdgeInsetsDirectional.only(end: 8),
       child: ChoiceChip(
         label: Text(label),
         selected: selected,
         onSelected: (_) => onSelected(),
-        selectedColor: AppColors.primary.withValues(alpha: 0.14),
+        selectedColor: primary.withValues(alpha: 0.14),
         labelStyle: TextStyle(
-          color: selected ? AppColors.primary : AppColors.textSecondary,
+          color: selected ? primary : AppColors.textSecondary,
           fontWeight: FontWeight.w700,
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         side: BorderSide(
           color: selected
-              ? AppColors.primary.withValues(alpha: 0.4)
+              ? primary.withValues(alpha: 0.4)
               : Colors.black.withValues(alpha: 0.08),
         ),
       ),
@@ -755,6 +754,7 @@ class _TodoSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = totalCount == 0 ? 0.0 : completedCount / totalCount;
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -768,9 +768,9 @@ class _TodoSummary extends StatelessWidget {
         children: [
           Row(
             children: [
-              const HugeIcon(
+              HugeIcon(
                 icon: HugeIcons.strokeRoundedChartColumn,
-                color: AppColors.primary,
+                color: primary,
                 size: 24,
                 strokeWidth: 2.35,
               ),
@@ -792,7 +792,8 @@ class _TodoSummary extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 8,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+              backgroundColor: primary.withValues(alpha: 0.12),
+              valueColor: AlwaysStoppedAnimation(primary),
             ),
           ),
           const SizedBox(height: 12),

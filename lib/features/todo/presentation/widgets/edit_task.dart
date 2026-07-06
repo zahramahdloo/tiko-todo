@@ -3,6 +3,8 @@ import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
+import '../../../../core/utils/jalali_date.dart';
+import '../../../../core/widgets/jalali_date_picker.dart';
 import '../../domain/entities/todo.dart';
 
 Future<void> showEditTaskDialog({
@@ -207,15 +209,17 @@ Future<void> showEditTaskDialog({
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: () async {
-                              final picked = await showDatePicker(
+                              final now = DateTime.now();
+                              final picked = await showJalaliDatePicker(
                                 context: context,
-                                initialDate: selectedDueAt ?? DateTime.now(),
-                                firstDate: DateTime.now().subtract(
+                                initialDate: selectedDueAt ?? now,
+                                firstDate: now.subtract(
                                   const Duration(days: 365),
                                 ),
-                                lastDate: DateTime.now().add(
+                                lastDate: now.add(
                                   const Duration(days: 3650),
                                 ),
+                                title: 'انتخاب تاریخ سررسید',
                               );
 
                               if (picked != null) {
@@ -230,7 +234,7 @@ Future<void> showEditTaskDialog({
                             label: Text(
                               selectedDueAt == null
                                   ? 'بدون سررسید'
-                                  : _formatDate(selectedDueAt!),
+                                  : formatJalaliDate(selectedDueAt!),
                             ),
                           ),
                         ),
@@ -334,8 +338,4 @@ List<TodoSubtask> _mergeSubtasks(String value, List<TodoSubtask> oldSubtasks) {
         return TodoSubtask(title: line, isCompleted: old?.isCompleted ?? false);
       })
       .toList();
-}
-
-String _formatDate(DateTime date) {
-  return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 import 'add_task_page.dart';
+import 'archive_page.dart';
 import 'timetable_page.dart';
 import 'todo_page.dart';
 
@@ -39,6 +39,8 @@ class _MainShellPageState extends State<MainShellPage> {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
@@ -46,6 +48,7 @@ class _MainShellPageState extends State<MainShellPage> {
           const TodoPage(),
           AddTaskPage(onTaskAdded: () => _selectTab(0)),
           const TimetablePage(),
+          const ArchivePage(),
           const SettingsPage(showAppBar: false, showQuickAccess: false),
         ],
       ),
@@ -55,39 +58,47 @@ class _MainShellPageState extends State<MainShellPage> {
           selectedIndex: _selectedIndex,
           onDestinationSelected: _selectTab,
           height: 72,
-          backgroundColor: Colors.white,
-          indicatorColor: AppColors.primary.withValues(alpha: 0.12),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          indicatorColor: primary.withValues(alpha: 0.12),
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: _NavIcon(icon: HugeIcons.strokeRoundedHome01),
+              icon: const _NavIcon(icon: HugeIcons.strokeRoundedHome01),
               selectedIcon: _NavIcon(
                 icon: HugeIcons.strokeRoundedHome01,
-                color: AppColors.primary,
+                color: primary,
               ),
               label: 'خانه',
             ),
             NavigationDestination(
-              icon: _NavIcon(icon: HugeIcons.strokeRoundedPlusSignCircle),
+              icon: const _NavIcon(icon: HugeIcons.strokeRoundedPlusSignCircle),
               selectedIcon: _NavIcon(
                 icon: HugeIcons.strokeRoundedPlusSignCircle,
-                color: AppColors.primary,
+                color: primary,
               ),
               label: 'افزودن',
             ),
             NavigationDestination(
-              icon: _NavIcon(icon: HugeIcons.strokeRoundedCalendar03),
+              icon: const _NavIcon(icon: HugeIcons.strokeRoundedCalendar03),
               selectedIcon: _NavIcon(
                 icon: HugeIcons.strokeRoundedCalendar03,
-                color: AppColors.primary,
+                color: primary,
               ),
               label: 'جدول زمانی',
             ),
             NavigationDestination(
-              icon: _NavIcon(icon: HugeIcons.strokeRoundedSettings02),
+              icon: const _NavIcon(icon: HugeIcons.strokeRoundedArchive),
+              selectedIcon: _NavIcon(
+                icon: HugeIcons.strokeRoundedArchive,
+                color: primary,
+              ),
+              label: 'آرشیو',
+            ),
+            NavigationDestination(
+              icon: const _NavIcon(icon: HugeIcons.strokeRoundedSettings02),
               selectedIcon: _NavIcon(
                 icon: HugeIcons.strokeRoundedSettings02,
-                color: AppColors.primary,
+                color: primary,
               ),
               label: 'تنظیمات',
             ),

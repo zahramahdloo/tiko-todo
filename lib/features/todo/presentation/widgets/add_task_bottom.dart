@@ -4,7 +4,9 @@ import 'package:hugeicons/hugeicons.dart';
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
 import '../../../../core/notifications/notification_service.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/jalali_date.dart';
+import '../../../../core/widgets/jalali_date_picker.dart';
+import '../../../../core/widgets/reminder_time_picker.dart';
 import '../../domain/entities/todo.dart';
 
 Future<void> showAddTaskBottomSheet({
@@ -43,45 +45,42 @@ Future<void> showAddTaskBottomSheet({
           final mediaQuery = MediaQuery.of(context);
 
           Future<void> pickReminderAt() async {
+            final dueAt = selectedDueAt;
+            if (dueAt == null) {
+              await showDialog<void>(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('اول تاریخ را انتخاب کن'),
+                    content: const Text(
+                      'برای تنظیم یادآوری، ابتدا تاریخ سررسید را انتخاب کن و بعد زمان را وارد کن.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('باشه'),
+                      ),
+                    ],
+                  );
+                },
+              );
+              return;
+            }
+
             final now = DateTime.now();
-            final initialDate =
-                selectedReminderAt ?? now.add(const Duration(hours: 1));
-            final pickedDate = await showDatePicker(
-              context: context,
-              initialDate: initialDate,
-              firstDate: now,
-              lastDate: now.add(const Duration(days: 3650)),
-            );
+            final initialDate = selectedReminderAt ?? dueAt;
 
-            if (pickedDate == null || !context.mounted) return;
-
-            final pickedTime = await showTimePicker(
+            final pickedTime = await showReminderTimePicker(
               context: context,
               initialTime: TimeOfDay.fromDateTime(initialDate),
-              initialEntryMode: TimePickerEntryMode.input,
-              helpText: 'زمان یادآوری را وارد کن',
-              cancelText: 'انصراف',
-              confirmText: 'تأیید',
-              hourLabelText: 'ساعت',
-              minuteLabelText: 'دقیقه',
-              builder: (context, child) {
-                return Theme(
-                  data: Theme.of(context).copyWith(
-                    colorScheme: Theme.of(
-                      context,
-                    ).colorScheme.copyWith(primary: AppColors.primary),
-                  ),
-                  child: child!,
-                );
-              },
             );
 
             if (pickedTime == null || !context.mounted) return;
 
             final picked = DateTime(
-              pickedDate.year,
-              pickedDate.month,
-              pickedDate.day,
+              dueAt.year,
+              dueAt.month,
+              dueAt.day,
               pickedTime.hour,
               pickedTime.minute,
             );
@@ -281,19 +280,35 @@ Future<void> showAddTaskBottomSheet({
                           Expanded(
                             child: OutlinedButton.icon(
                               onPressed: () async {
-                                final picked = await showDatePicker(
+                                final now = DateTime.now();
+                                final picked = await showJalaliDatePicker(
                                   context: context,
-                                  initialDate: selectedDueAt ?? DateTime.now(),
-                                  firstDate: DateTime.now().subtract(
+                                  initialDate: selectedDueAt ?? now,
+                                  firstDate: now.subtract(
                                     const Duration(days: 365),
                                   ),
-                                  lastDate: DateTime.now().add(
-                                    const Duration(days: 3650),
-                                  ),
+                                  lastDate: now.add(const Duration(days: 3650)),
+                                  title: 'انتخاب تاریخ سررسید',
                                 );
 
                                 if (picked != null) {
-                                  setState(() => selectedDueAt = picked);
+                                  setState(() {
+                                    selectedDueAt = picked;
+                                    if (selectedReminderAt != null) {
+                                      final oldReminder = selectedReminderAt!;
+                                      final updatedReminder = DateTime(
+                                        picked.year,
+                                        picked.month,
+                                        picked.day,
+                                        oldReminder.hour,
+                                        oldReminder.minute,
+                                      );
+                                      selectedReminderAt =
+                                          updatedReminder.isAfter(now)
+                                          ? updatedReminder
+                                          : null;
+                                    }
+                                  });
                                 }
                               },
                               icon: const HugeIcon(
@@ -304,15 +319,17 @@ Future<void> showAddTaskBottomSheet({
                               label: Text(
                                 selectedDueAt == null
                                     ? 'بدون تاریخ سررسید'
-                                    : 'سررسید: ${_formatDate(selectedDueAt!)}',
+                                    : 'سررسید: ${formatJalaliDate(selectedDueAt!)}',
                               ),
                             ),
                           ),
                           if (selectedDueAt != null)
                             IconButton(
                               tooltip: 'حذف سررسید',
-                              onPressed: () =>
-                                  setState(() => selectedDueAt = null),
+                              onPressed: () => setState(() {
+                                selectedDueAt = null;
+                                selectedReminderAt = null;
+                              }),
                               icon: const HugeIcon(
                                 icon: HugeIcons.strokeRoundedMultiplicationSign,
                                 size: 24,
@@ -367,7 +384,7 @@ Future<void> showAddTaskBottomSheet({
                               label: Text(
                                 selectedReminderAt == null
                                     ? 'انتخاب زمان یادآوری'
-                                    : 'یادآوری: ${_formatDate(selectedReminderAt!)} - ${_formatTime(selectedReminderAt!)}',
+                                    : 'یادآوری: ${formatJalaliDate(selectedReminderAt!)} - ${_formatTime(selectedReminderAt!)}',
                               ),
                             ),
                           ),
@@ -451,10 +468,6 @@ List<TodoSubtask> _parseSubtasks(String value) {
       .where((line) => line.isNotEmpty)
       .map((line) => TodoSubtask(title: line))
       .toList();
-}
-
-String _formatDate(DateTime date) {
-  return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
 }
 
 String _formatTime(DateTime date) {

@@ -6,14 +6,37 @@ Tiko Todo is a Persian-first Flutter task-management app built as a portfolio pr
 
 ## Screenshots
 
-Add app screenshots to `docs/screenshots/` and reference them here.
-
-```md
-![Home](docs/screenshots/home.png)
-![Timetable](docs/screenshots/timetable.png)
-![Archive](docs/screenshots/archive.png)
-![Settings](docs/screenshots/settings.png)
-```
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/screenshots/home.jpg" width="220" alt="Tiko home page"/>
+      <br/>
+      <strong>Home & Task Management</strong>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/add-task.jpg" width="220" alt="Add task page"/>
+      <br/>
+      <strong>Create Task</strong>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/timetable.jpg" width="220" alt="Jalali timetable"/>
+      <br/>
+      <strong>Jalali Timetable</strong>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/screenshots/archive.jpg" width="220" alt="Task archive"/>
+      <br/>
+      <strong>Completed Tasks Archive</strong>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/settings.jpg" width="220" alt="App settings"/>
+      <br/>
+      <strong>Theme & Account Settings</strong>
+    </td>
+  </tr>
+</table>
 
 ## Highlights
 

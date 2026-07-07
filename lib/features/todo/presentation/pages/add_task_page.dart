@@ -7,6 +7,7 @@ import '../../../../core/enums/todo_status.dart';
 import '../../../../core/notifications/notification_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/jalali_date.dart';
+import '../../../../core/widgets/app_bar_brand_title.dart';
 import '../../../../core/widgets/jalali_date_picker.dart';
 import '../../../../core/widgets/reminder_time_picker.dart';
 import '../../../../core/widgets/responsive_layout.dart';
@@ -177,9 +178,13 @@ class _AddTaskPageState extends State<AddTaskPage> {
         : '${formatJalaliDate(_reminderAt!)}، ${_formatTime(_reminderAt!)}';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('افزودن کار'),
+        title: const AppBarBrandTitle(
+          title: 'افزودن کار',
+          iconSize: 24,
+          fontSize: 18,
+        ),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
@@ -320,7 +325,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
                             return BorderSide(
                               color: selected
                                   ? primary.withValues(alpha: 0.45)
-                                  : Colors.black.withValues(alpha: 0.08),
+                                  : Theme.of(context).colorScheme.outlineVariant
+                                        .withValues(alpha: 0.75),
                             );
                           }),
                         ),
@@ -485,7 +491,7 @@ class _SectionTitle extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -509,22 +515,24 @@ class _OptionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return ChoiceChip(
       label: Text(label),
       selected: selected,
       onSelected: (_) => onSelected(),
       showCheckmark: false,
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.surface,
       selectedColor: selectedColor.withValues(alpha: 0.13),
       labelStyle: TextStyle(
-        color: selected ? selectedColor : AppColors.textSecondary,
+        color: selected ? selectedColor : colorScheme.onSurfaceVariant,
         fontWeight: FontWeight.w700,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       side: BorderSide(
         color: selected
             ? selectedColor.withValues(alpha: 0.42)
-            : Colors.black.withValues(alpha: 0.08),
+            : colorScheme.outlineVariant.withValues(alpha: 0.75),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
     );
@@ -551,12 +559,13 @@ class _ActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
-    final color = active ? primary : AppColors.textSecondary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = active ? primary : colorScheme.onSurfaceVariant;
 
     return Material(
       color: active
           ? primary.withValues(alpha: 0.08)
-          : AppColors.background.withValues(alpha: 0.78),
+          : colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
@@ -568,7 +577,7 @@ class _ActionTile extends StatelessWidget {
             border: Border.all(
               color: active
                   ? primary.withValues(alpha: 0.22)
-                  : Colors.black.withValues(alpha: 0.06),
+                  : colorScheme.outlineVariant.withValues(alpha: 0.65),
             ),
           ),
           child: Row(
@@ -582,10 +591,9 @@ class _ActionTile extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        color: AppColors.textSecondary,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                      ),
+                      ).copyWith(color: colorScheme.onSurfaceVariant),
                     ),
                     const SizedBox(height: 3),
                     Text(
@@ -593,7 +601,7 @@ class _ActionTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: active ? AppColors.textPrimary : color,
+                        color: active ? colorScheme.onSurface : color,
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                       ),
@@ -626,12 +634,16 @@ class _Panel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.65),
+        ),
       ),
       child: child,
     );

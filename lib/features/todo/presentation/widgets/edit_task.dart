@@ -216,9 +216,7 @@ Future<void> showEditTaskDialog({
                                 firstDate: now.subtract(
                                   const Duration(days: 365),
                                 ),
-                                lastDate: now.add(
-                                  const Duration(days: 3650),
-                                ),
+                                lastDate: now.add(const Duration(days: 3650)),
                                 title: 'انتخاب تاریخ سررسید',
                               );
 
@@ -283,7 +281,6 @@ Future<void> showEditTaskDialog({
                 child: const Text('انصراف'),
               ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                 onPressed: () async {
                   final title = controller.text.trim();
                   if (title.isEmpty) return;
@@ -308,10 +305,7 @@ Future<void> showEditTaskDialog({
                     subtasks,
                   );
                 },
-                child: const Text(
-                  'ذخیره',
-                  style: TextStyle(color: Colors.white),
-                ),
+                child: const Text('ذخیره'),
               ),
             ],
           );

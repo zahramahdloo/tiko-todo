@@ -8,6 +8,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
+import '../../../../core/widgets/app_bar_brand_title.dart';
 import '../../../../core/widgets/responsive_layout.dart';
 import '../../domain/entities/todo.dart';
 import '../bloc/todo_bloc.dart';
@@ -540,12 +541,29 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final primary = colorScheme.primary;
+    final settings = sl<AccountSettingsController>();
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return AppBar(
       toolbarHeight: 72,
       centerTitle: true,
       titleSpacing: 0,
+      leading: IconButton(
+        tooltip: isDarkMode ? 'حالت روشن' : 'حالت تاریک',
+        onPressed: () {
+          settings.setThemeMode(isDarkMode ? ThemeMode.light : ThemeMode.dark);
+        },
+        icon: HugeIcon(
+          icon: isDarkMode
+              ? HugeIcons.strokeRoundedSun03
+              : HugeIcons.strokeRoundedMoon,
+          size: 24,
+          color: primary,
+          strokeWidth: 2.35,
+        ),
+      ),
       actions: [
         IconButton(
           tooltip: 'تنظیمات',
@@ -559,31 +577,7 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
 
-      title: BlocBuilder<TodoBloc, TodoState>(
-        builder: (context, state) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    'assets/icons/app_icon.png',
-                    width: 25,
-                    height: 25,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'تیکو',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 2),
-            ],
-          );
-        },
-      ),
+      title: const AppBarBrandTitle(title: 'تیکو'),
 
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(108),
@@ -622,7 +616,10 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
                             ),
                           ),
                     filled: true,
-                    fillColor: AppColors.background,
+                    fillColor: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest
+                        .withValues(alpha: 0.7),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide.none,
@@ -714,7 +711,8 @@ class _FilterChipButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final primary = colorScheme.primary;
 
     return Padding(
       padding: const EdgeInsetsDirectional.only(end: 8),
@@ -724,14 +722,14 @@ class _FilterChipButton extends StatelessWidget {
         onSelected: (_) => onSelected(),
         selectedColor: primary.withValues(alpha: 0.14),
         labelStyle: TextStyle(
-          color: selected ? primary : AppColors.textSecondary,
+          color: selected ? primary : colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.w700,
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         side: BorderSide(
           color: selected
               ? primary.withValues(alpha: 0.4)
-              : Colors.black.withValues(alpha: 0.08),
+              : colorScheme.outlineVariant.withValues(alpha: 0.75),
         ),
       ),
     );
@@ -754,14 +752,17 @@ class _TodoSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = totalCount == 0 ? 0.0 : completedCount / totalCount;
-    final primary = Theme.of(context).colorScheme.primary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final primary = colorScheme.primary;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.65),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -779,7 +780,7 @@ class _TodoSummary extends StatelessWidget {
                 child: Text(
                   '$completedCount از $totalCount کار انجام شده',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.textPrimary,
+                    color: colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

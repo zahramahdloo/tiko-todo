@@ -1,18 +1,32 @@
 # Tiko Todo
 
-Tiko Todo is a Flutter task-management app built as a portfolio project. It focuses on a clean mobile experience, Supabase-backed authentication/data storage, and maintainable feature-based architecture.
+[![Flutter CI](https://github.com/zahramahdloo/tiko-todo/actions/workflows/flutter_ci.yml/badge.svg)](https://github.com/zahramahdloo/tiko-todo/actions/workflows/flutter_ci.yml)
 
-## Features
+Tiko Todo is a Persian-first Flutter task-management app built as a portfolio project. It combines a polished mobile UI with Supabase authentication, user-scoped cloud storage, local reminders, BLoC state management, and a feature-first Clean Architecture structure.
+
+## Screenshots
+
+Add app screenshots to `docs/screenshots/` and reference them here.
+
+```md
+![Home](docs/screenshots/home.png)
+![Timetable](docs/screenshots/timetable.png)
+![Archive](docs/screenshots/archive.png)
+![Settings](docs/screenshots/settings.png)
+```
+
+## Highlights
 
 - Email/password authentication with Supabase
-- User-scoped todo data with Supabase Row Level Security
-- Create, update, delete, archive, and restore tasks
-- Task statuses, priorities, categories, due dates, reminders, and subtasks
-- Search, filtering, and sorting for task lists
+- User-scoped todo data protected by Supabase Row Level Security
+- Create, update, delete, archive, and inspect completed tasks
+- Statuses, priorities, categories, due dates, reminders, and subtasks
+- Timeline view for scheduled tasks
+- Archive view grouped by repeated completed task titles
+- Search, filtering, sorting, and quick theme switching
 - Local notification scheduling for reminders
-- Customizable theme mode and primary color
-- Persian-first UI with Flutter localization support
-- BLoC state management, dependency injection, and layered todo modules
+- Persian-first UI with Flutter localization
+- Clean Architecture, BLoC, dependency injection, and testable data mapping
 
 ## Tech Stack
 
@@ -24,31 +38,61 @@ Tiko Todo is a Flutter task-management app built as a portfolio project. It focu
 - flutter_local_notifications
 - shared_preferences
 
-## Project Structure
+## Architecture
 
 ```text
 lib/
-  core/                 Shared routing, theme, DI, account, notifications
+  core/
+    account/            Account/session settings
+    config/             Build-time environment configuration
+    di/                 Dependency injection
+    error/              App-level failures
+    notifications/      Local notification service
+    router/             go_router configuration
+    theme/              Light/dark themes
+    utils/              Shared formatting helpers
+    widgets/            Shared UI components
   features/
-    account/            Authentication UI
-    settings/           Profile and app preferences
+    account/
+      presentation/     Authentication UI
+    settings/
+      presentation/     Profile and app preferences
     todo/
-      data/             Supabase data source and models
-      domain/           Entities, repositories, use cases
+      data/             Supabase data sources, DTOs/models, table constants
+      domain/           Entities, repository contracts, use cases
       presentation/     BLoC, pages, widgets
 ```
 
-## Getting Started
+See [docs/architecture.md](docs/architecture.md) for the dependency rule and data flow.
 
-1. Install Flutter and clone the repository.
-2. Install dependencies:
+## Supabase Setup
+
+1. Create a Supabase project.
+2. Open the Supabase SQL Editor.
+3. Run [docs/supabase_schema.sql](docs/supabase_schema.sql).
+4. Enable email/password authentication in Supabase Auth.
+
+## Run Locally
+
+Install dependencies:
 
 ```bash
 flutter pub get
 ```
 
-3. Create a Supabase project and run the SQL in `docs/supabase_schema.sql`.
-4. Run the app with your Supabase configuration:
+Create a local `.env` file from `.env.example` and fill in your Supabase values:
+
+```bash
+cp .env.example .env
+```
+
+Run the app:
+
+```bash
+flutter run --dart-define-from-file=.env
+```
+
+You can also pass values directly:
 
 ```bash
 flutter run \
@@ -56,24 +100,26 @@ flutter run \
   --dart-define=SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
 ```
 
+## Quality Checks
+
+```bash
+dart format .
+flutter analyze
+flutter test
+```
+
+The GitHub Actions workflow runs formatting, analysis, and tests on pushes and pull requests to `main`.
+
 ## Android Release Build
 
 Create `android/key.properties` from `android/key.properties.example` and keep the real file private.
 
 ```bash
-flutter build apk --release \
-  --dart-define=SUPABASE_URL=https://your-project.supabase.co \
-  --dart-define=SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
+flutter build apk --release --dart-define-from-file=.env
 ```
 
-## Quality Checks
+## Security Notes
 
-```bash
-flutter analyze
-flutter test
-```
-
-## Notes
-
-- Real signing files, `.env` files, APK/AAB outputs, and local build folders are intentionally ignored.
-- The Supabase publishable key should be provided at build/run time instead of committed directly to source.
+- Real `.env` files, signing keys, APK/AAB outputs, and local build folders are ignored.
+- The Supabase publishable key is provided at build/run time and is not committed to source.
+- Row Level Security ensures each authenticated user can access only their own todos.

@@ -4,6 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../core/account/account_settings_controller.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/widgets/app_bar_brand_title.dart';
 import '../../../../core/widgets/responsive_layout.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -69,7 +70,14 @@ class _SettingsPageState extends State<SettingsPage> {
 
         return Scaffold(
           appBar: widget.showAppBar
-              ? AppBar(title: const Text('تنظیمات'))
+              ? AppBar(
+                  centerTitle: true,
+                  title: const AppBarBrandTitle(
+                    title: 'تنظیمات',
+                    iconSize: 24,
+                    fontSize: 18,
+                  ),
+                )
               : null,
           body: SafeArea(
             child: ResponsiveContent(
@@ -289,7 +297,11 @@ class _Section extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.65),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

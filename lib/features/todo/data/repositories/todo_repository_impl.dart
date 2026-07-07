@@ -1,7 +1,6 @@
 import '../../domain/entities/todo.dart';
 import '../../domain/repositories/todo_repository.dart';
 import '../datasources/todo_remote_datasource.dart';
-
 import '../models/todo_model.dart';
 
 class TodoRepositoryImpl implements TodoRepository {
@@ -11,13 +10,13 @@ class TodoRepositoryImpl implements TodoRepository {
 
   @override
   Future<List<Todo>> getTodos() async {
-    final data = await remote.getTodos();
-    return data.map((e) => TodoModel.fromMap(e).toEntity()).toList();
+    final todos = await remote.getTodos();
+    return todos.map((todo) => todo.toEntity()).toList();
   }
 
   @override
   Future<void> addTodo(Todo todo) {
-    return remote.insert(TodoModel.fromEntity(todo).toMap());
+    return remote.insert(TodoModel.fromEntity(todo));
   }
 
   @override
@@ -27,6 +26,6 @@ class TodoRepositoryImpl implements TodoRepository {
 
   @override
   Future<void> updateTodo(Todo todo) {
-    return remote.update(TodoModel.fromEntity(todo).toMap());
+    return remote.update(TodoModel.fromEntity(todo));
   }
 }

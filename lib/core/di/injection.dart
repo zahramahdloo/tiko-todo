@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/todo/data/datasources/todo_remote_datasource.dart';
+import '../../features/todo/data/datasources/supabase_todo_remote_datasource.dart';
 import '../../features/todo/data/repositories/todo_repository_impl.dart';
 import '../../features/todo/domain/repositories/todo_repository.dart';
 import '../../features/todo/domain/usecases/add_todo.dart';
@@ -17,7 +18,7 @@ Future<void> initDI() async {
   sl.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
 
   sl.registerLazySingleton<TodoRemoteDataSource>(
-    () => TodoRemoteDataSource(sl<SupabaseClient>()),
+    () => SupabaseTodoRemoteDataSource(sl<SupabaseClient>()),
   );
 
   sl.registerLazySingleton<TodoRepository>(

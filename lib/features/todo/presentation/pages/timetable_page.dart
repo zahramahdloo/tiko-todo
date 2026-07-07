@@ -7,6 +7,7 @@ import 'package:hugeicons/hugeicons.dart';
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_bar_brand_title.dart';
 import '../../../../core/widgets/responsive_layout.dart';
 import '../../domain/entities/todo.dart';
 import '../bloc/todo_bloc.dart';
@@ -136,13 +137,13 @@ class _TimetableHeader extends StatelessWidget {
               const Spacer(),
               Column(
                 children: [
-                  const Text(
-                    'جدول زمانی',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  AppBarBrandTitle(
+                    title: 'جدول زمانی',
+                    iconSize: 24,
+                    fontSize: 20,
+                    foregroundColor: Colors.white,
+                    iconBackgroundColor: Colors.white.withValues(alpha: 0.16),
+                    iconBorderColor: Colors.white.withValues(alpha: 0.22),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -231,12 +232,15 @@ class _TimelineTaskCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final accent = _priorityColor(todo.priority);
     final time = _taskDate(todo);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.65),
+        ),
       ),
       child: IntrinsicHeight(
         child: Row(
@@ -253,8 +257,8 @@ class _TimelineTaskCard extends StatelessWidget {
                   children: [
                     Text(
                       _formatTime(time),
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                       ),
@@ -262,8 +266,8 @@ class _TimelineTaskCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       time == null ? 'بدون ساعت' : 'یادآوری',
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: colorScheme.onSurfaceVariant,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                       ),
@@ -286,10 +290,10 @@ class _TimelineTaskCard extends StatelessWidget {
                             todo.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
-                              color: AppColors.textPrimary,
+                              color: colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -305,8 +309,8 @@ class _TimelineTaskCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${todo.category} • ${_statusLabel(todo.status)}',
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: colorScheme.onSurfaceVariant,
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                       ),
@@ -358,20 +362,17 @@ class _Detail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final secondary = Theme.of(context).colorScheme.onSurfaceVariant;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        HugeIcon(
-          icon: icon,
-          size: 18,
-          color: AppColors.textSecondary,
-          strokeWidth: 2.35,
-        ),
+        HugeIcon(icon: icon, size: 18, color: secondary, strokeWidth: 2.35),
         const SizedBox(width: 4),
         Text(
           label,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
+          style: TextStyle(
+            color: secondary,
             fontSize: 12,
             fontWeight: FontWeight.w700,
           ),

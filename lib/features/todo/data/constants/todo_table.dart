@@ -1,9 +1,10 @@
-class DbConstants {
-  DbConstants._();
+class TodoTable {
+  TodoTable._();
 
-  static const String tableName = 'todos';
+  static const String name = 'todos';
 
   static const String id = 'id';
+  static const String userId = 'user_id';
   static const String title = 'title';
   static const String status = 'status';
   static const String priority = 'priority';

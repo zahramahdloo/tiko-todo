@@ -64,6 +64,7 @@ class TodoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final completed = todo.status == TodoStatus.completed;
+    final colorScheme = Theme.of(context).colorScheme;
     final completedSubtasks = todo.subtasks
         .where((subtask) => subtask.isCompleted)
         .length;
@@ -75,11 +76,13 @@ class TodoItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         color: completed
             ? AppColors.statusCompleted.withValues(alpha: 0.08)
-            : Colors.white,
-        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+            : colorScheme.surface,
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.65),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -128,7 +131,9 @@ class TodoItem extends StatelessWidget {
             decoration: completed
                 ? TextDecoration.lineThrough
                 : TextDecoration.none,
-            color: completed ? AppColors.textSecondary : AppColors.textPrimary,
+            color: completed
+                ? colorScheme.onSurfaceVariant
+                : colorScheme.onSurface,
           ),
         ),
         subtitle: Padding(
@@ -142,8 +147,8 @@ class TodoItem extends StatelessWidget {
                 children: [
                   _InfoChip(
                     label: todo.category,
-                    textColor: AppColors.textSecondary,
-                    backgroundColor: AppColors.background,
+                    textColor: colorScheme.onSurfaceVariant,
+                    backgroundColor: colorScheme.surfaceContainerHighest,
                   ),
                   _InfoChip(
                     label: _statusLabel(todo.status),
@@ -178,10 +183,9 @@ class TodoItem extends StatelessWidget {
                       Text(
                         '$completedSubtasks از ${todo.subtasks.length} زیرکار انجام شده',
                         style: const TextStyle(
-                          color: AppColors.textSecondary,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                        ),
+                        ).copyWith(color: colorScheme.onSurfaceVariant),
                       ),
                       const SizedBox(height: 4),
                       ...List.generate(visibleSubtasks.length, (index) {
@@ -200,7 +204,7 @@ class TodoItem extends StatelessWidget {
                                   size: 20,
                                   color: subtask.isCompleted
                                       ? AppColors.statusCompleted
-                                      : AppColors.textSecondary,
+                                      : colorScheme.onSurfaceVariant,
                                   strokeWidth: 2.35,
                                 ),
                                 const SizedBox(width: 4),
@@ -211,7 +215,7 @@ class TodoItem extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textSecondary,
+                                      color: colorScheme.onSurfaceVariant,
                                       decoration: subtask.isCompleted
                                           ? TextDecoration.lineThrough
                                           : TextDecoration.none,

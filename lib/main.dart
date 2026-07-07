@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/account/account_settings_controller.dart';
+import 'core/config/supabase_config.dart';
 import 'core/di/injection.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  const supabasePublishableKey = String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
+  SupabaseConfig.validate();
 
-  if (supabaseUrl.isEmpty || supabasePublishableKey.isEmpty) {
-    throw StateError(
-      'Missing Supabase configuration. '
-      'Run with --dart-define-from-file=.env',
-    );
-  }
-
-  await Supabase.initialize(url: supabaseUrl, publishableKey: supabasePublishableKey);
+  await Supabase.initialize(
+    url: SupabaseConfig.url,
+    publishableKey: SupabaseConfig.publishableKey,
+  );
 
   await initDI();
   await NotificationService.init();

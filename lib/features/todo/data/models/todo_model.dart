@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
+import '../constants/todo_table.dart';
 import '../../domain/entities/todo.dart';
 
 class TodoModel {
@@ -31,34 +32,34 @@ class TodoModel {
 
   factory TodoModel.fromMap(Map<String, dynamic> map) {
     return TodoModel(
-      id: _parseId(map['id']),
-      title: map['title'] as String? ?? '',
-      status: map['status'] as String? ?? TodoStatus.pending.name,
-      priority: map['priority'] as String? ?? TodoPriority.normal.name,
-      reminderAt: _parseDateToMillis(map['reminder_at']),
-      dueAt: _parseDateToMillis(map['due_at']),
-      completedAt: _parseDateToMillis(map['completed_at']),
-      category: map['category'] as String? ?? 'شخصی',
-      subtasks: _normalizeSubtasksToString(map['subtasks']),
-      isArchived: _parseBool(map['is_archived']),
+      id: _parseId(map[TodoTable.id]),
+      title: map[TodoTable.title] as String? ?? '',
+      status: map[TodoTable.status] as String? ?? TodoStatus.pending.name,
+      priority: map[TodoTable.priority] as String? ?? TodoPriority.normal.name,
+      reminderAt: _parseDateToMillis(map[TodoTable.reminderAt]),
+      dueAt: _parseDateToMillis(map[TodoTable.dueAt]),
+      completedAt: _parseDateToMillis(map[TodoTable.completedAt]),
+      category: map[TodoTable.category] as String? ?? 'شخصی',
+      subtasks: _normalizeSubtasksToString(map[TodoTable.subtasks]),
+      isArchived: _parseBool(map[TodoTable.isArchived]),
     );
   }
 
   Map<String, dynamic> toMap() {
     final map = <String, dynamic>{
-      'title': title,
-      'status': status,
-      'priority': priority,
-      'reminder_at': _millisToIsoString(reminderAt),
-      'due_at': _millisToIsoString(dueAt),
-      'completed_at': _millisToIsoString(completedAt),
-      'category': category,
-      'subtasks': _subtasksForSupabase(subtasks),
-      'is_archived': isArchived,
+      TodoTable.title: title,
+      TodoTable.status: status,
+      TodoTable.priority: priority,
+      TodoTable.reminderAt: _millisToIsoString(reminderAt),
+      TodoTable.dueAt: _millisToIsoString(dueAt),
+      TodoTable.completedAt: _millisToIsoString(completedAt),
+      TodoTable.category: category,
+      TodoTable.subtasks: _subtasksForSupabase(subtasks),
+      TodoTable.isArchived: isArchived,
     };
 
     if (id != null) {
-      map['id'] = id;
+      map[TodoTable.id] = id;
     }
 
     return map;

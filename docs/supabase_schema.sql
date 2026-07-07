@@ -7,7 +7,7 @@ create table if not exists public.todos (
   reminder_at timestamptz,
   due_at timestamptz,
   completed_at timestamptz,
-  category text not null default 'Personal',
+  category text not null default 'شخصی',
   subtasks jsonb not null default '[]'::jsonb,
   is_archived boolean not null default false,
   created_at timestamptz not null default now(),
@@ -15,6 +15,11 @@ create table if not exists public.todos (
 );
 
 alter table public.todos enable row level security;
+
+drop policy if exists "Users can read their todos" on public.todos;
+drop policy if exists "Users can insert todos" on public.todos;
+drop policy if exists "Users can update todos" on public.todos;
+drop policy if exists "Users can delete todos" on public.todos;
 
 create policy "Users can read their todos"
 on public.todos for select

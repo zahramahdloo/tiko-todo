@@ -132,7 +132,7 @@ class _TimetableHeader extends StatelessWidget {
                 icon: HugeIcons.strokeRoundedCalendar03,
                 size: 28,
                 color: Colors.white,
-                strokeWidth: 2.35,
+                strokeWidth: 2.2,
               ),
               const Spacer(),
               Column(
@@ -163,7 +163,7 @@ class _TimetableHeader extends StatelessWidget {
                   icon: HugeIcons.strokeRoundedRefresh,
                   size: 24,
                   color: Colors.white,
-                  strokeWidth: 2.35,
+                  strokeWidth: 2.2,
                 ),
                 tooltip: 'امروز',
               ),
@@ -302,7 +302,7 @@ class _TimelineTaskCard extends StatelessWidget {
                             icon: HugeIcons.strokeRoundedBookmark02,
                             size: 24,
                             color: accent,
-                            strokeWidth: 2.35,
+                            strokeWidth: 2.2,
                           ),
                       ],
                     ),
@@ -367,7 +367,7 @@ class _Detail extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        HugeIcon(icon: icon, size: 18, color: secondary, strokeWidth: 2.35),
+        HugeIcon(icon: icon, size: 18, color: secondary, strokeWidth: 2.2),
         const SizedBox(width: 4),
         Text(
           label,
@@ -423,7 +423,7 @@ class _DeadlineCountdown extends StatelessWidget {
                 icon: HugeIcons.strokeRoundedClock01,
                 size: 18,
                 color: color,
-                strokeWidth: 2.35,
+                strokeWidth: 2.2,
               ),
               const SizedBox(width: 6),
               Flexible(
@@ -463,7 +463,7 @@ class _EmptyTimetable extends StatelessWidget {
               icon: HugeIcons.strokeRoundedCalendar03,
               size: 80,
               color: Colors.grey,
-              strokeWidth: 2.35,
+              strokeWidth: 2.2,
             ),
             SizedBox(height: 12),
             Text(

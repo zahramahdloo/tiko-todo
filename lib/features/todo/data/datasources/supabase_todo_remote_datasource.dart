@@ -27,8 +27,8 @@ class SupabaseTodoRemoteDataSource implements TodoRemoteDataSource {
       rethrow;
     } on PostgrestException catch (error) {
       throw ServerFailure(error.message);
-    } catch (error) {
-      throw ServerFailure('Failed to load todos: $error');
+    } catch (_) {
+      throw const ServerFailure('خطا در بارگذاری کارها.');
     }
   }
 
@@ -43,8 +43,8 @@ class SupabaseTodoRemoteDataSource implements TodoRemoteDataSource {
       rethrow;
     } on PostgrestException catch (error) {
       throw ServerFailure(error.message);
-    } catch (error) {
-      throw ServerFailure('Failed to add todo: $error');
+    } catch (_) {
+      throw const ServerFailure('خطا در افزودن کار.');
     }
   }
 
@@ -55,7 +55,9 @@ class SupabaseTodoRemoteDataSource implements TodoRemoteDataSource {
       final userId = _currentUserId();
 
       if (id == null) {
-        throw const ServerFailure('Cannot update a todo without an id.');
+        throw const ServerFailure(
+          'این کار شناسه معتبر ندارد و قابل ویرایش نیست.',
+        );
       }
 
       await client
@@ -67,8 +69,8 @@ class SupabaseTodoRemoteDataSource implements TodoRemoteDataSource {
       rethrow;
     } on PostgrestException catch (error) {
       throw ServerFailure(error.message);
-    } catch (error) {
-      throw ServerFailure('Failed to update todo: $error');
+    } catch (_) {
+      throw const ServerFailure('خطا در ویرایش کار.');
     }
   }
 
@@ -84,8 +86,8 @@ class SupabaseTodoRemoteDataSource implements TodoRemoteDataSource {
       rethrow;
     } on PostgrestException catch (error) {
       throw ServerFailure(error.message);
-    } catch (error) {
-      throw ServerFailure('Failed to delete todo: $error');
+    } catch (_) {
+      throw const ServerFailure('خطا در حذف کار.');
     }
   }
 
@@ -100,7 +102,9 @@ class SupabaseTodoRemoteDataSource implements TodoRemoteDataSource {
     final userId = client.auth.currentUser?.id;
 
     if (userId == null) {
-      throw const AuthenticationFailure('A signed-in user is required.');
+      throw const AuthenticationFailure(
+        'برای انجام این کار باید وارد حساب کاربری شوید.',
+      );
     }
 
     return userId;

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/account/account_settings_controller.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/router/app_routes.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -19,7 +20,7 @@ class _SplashPageState extends State<SplashPage> {
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (!mounted) return;
       final settings = sl<AccountSettingsController>();
-      context.go(settings.isSignedIn ? '/home' : '/auth');
+      context.go(settings.isSignedIn ? AppRoutes.home : AppRoutes.auth);
     });
   }
 
@@ -44,11 +45,7 @@ class _SplashPageState extends State<SplashPage> {
               const SizedBox(height: 20),
               const Text(
                     'تیکو',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'IranYekan',
-                    ),
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
                   )
                   .animate()
                   .fadeIn(delay: 600.ms, duration: 500.ms)

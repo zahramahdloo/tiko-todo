@@ -4,6 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../core/account/account_settings_controller.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/widgets/responsive_layout.dart';
 
 class AuthPage extends StatefulWidget {
@@ -53,7 +54,7 @@ class _AuthPageState extends State<AuthPage> {
       return;
     }
 
-    context.go('/home');
+    context.go(AppRoutes.home);
   }
 
   @override
@@ -102,7 +103,7 @@ class _AuthPageState extends State<AuthPage> {
                         child: HugeIcon(
                           icon: HugeIcons.strokeRoundedUser,
                           size: 24,
-                          strokeWidth: 2.35,
+                          strokeWidth: 2.2,
                         ),
                       ),
                     ),
@@ -120,7 +121,7 @@ class _AuthPageState extends State<AuthPage> {
                       child: HugeIcon(
                         icon: HugeIcons.strokeRoundedMail01,
                         size: 24,
-                        strokeWidth: 2.35,
+                        strokeWidth: 2.2,
                       ),
                     ),
                   ),
@@ -137,7 +138,7 @@ class _AuthPageState extends State<AuthPage> {
                       child: HugeIcon(
                         icon: HugeIcons.strokeRoundedLock,
                         size: 24,
-                        strokeWidth: 2.35,
+                        strokeWidth: 2.2,
                       ),
                     ),
                     suffixIcon: IconButton(
@@ -148,7 +149,7 @@ class _AuthPageState extends State<AuthPage> {
                             ? HugeIcons.strokeRoundedEye
                             : HugeIcons.strokeRoundedViewOffSlash,
                         size: 24,
-                        strokeWidth: 2.35,
+                        strokeWidth: 2.2,
                       ),
                     ),
                   ),

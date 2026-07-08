@@ -159,7 +159,7 @@ class _ArchiveTaskDetailPage extends StatelessWidget {
                               icon: HugeIcons.strokeRoundedTickDouble01,
                               size: 24,
                               color: AppColors.statusCompleted,
-                              strokeWidth: 2.35,
+                              strokeWidth: 2.2,
                             ),
                           ),
                         ),
@@ -247,7 +247,7 @@ class _ArchiveHeader extends StatelessWidget {
                 icon: HugeIcons.strokeRoundedArchive,
                 size: 28,
                 color: Colors.white,
-                strokeWidth: 2.35,
+                strokeWidth: 2.2,
               ),
               const Spacer(),
               AppBarBrandTitle(
@@ -377,7 +377,7 @@ class _ArchiveTaskTile extends StatelessWidget {
                         icon: HugeIcons.strokeRoundedTickDouble01,
                         size: 24,
                         color: AppColors.statusCompleted,
-                        strokeWidth: 2.35,
+                        strokeWidth: 2.2,
                       ),
                     ),
                   ),
@@ -409,7 +409,7 @@ class _ArchiveTaskTile extends StatelessWidget {
                         icon: HugeIcons.strokeRoundedArrowLeft01,
                         size: 20,
                         color: colorScheme.onSurfaceVariant,
-                        strokeWidth: 2.35,
+                        strokeWidth: 2.2,
                       ),
                     ),
                   ),
@@ -463,7 +463,7 @@ class _ArchiveMetaChip extends StatelessWidget {
             icon: icon,
             size: 18,
             color: AppColors.statusCompleted,
-            strokeWidth: 2.35,
+            strokeWidth: 2.2,
           ),
           const SizedBox(width: 6),
           Flexible(
@@ -598,7 +598,7 @@ class _DetailRow extends StatelessWidget {
 
     return Row(
       children: [
-        HugeIcon(icon: icon, size: 22, color: secondary, strokeWidth: 2.35),
+        HugeIcon(icon: icon, size: 22, color: secondary, strokeWidth: 2.2),
         const SizedBox(width: 10),
         Text(
           label,
@@ -651,7 +651,7 @@ class _SubtaskRow extends StatelessWidget {
                 : HugeIcons.strokeRoundedCircle,
             size: 20,
             color: subtask.isCompleted ? AppColors.statusCompleted : secondary,
-            strokeWidth: 2.35,
+            strokeWidth: 2.2,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -705,7 +705,7 @@ class _EmptyArchive extends StatelessWidget {
                     icon: HugeIcons.strokeRoundedArchive,
                     size: 34,
                     color: Theme.of(context).colorScheme.primary,
-                    strokeWidth: 2.35,
+                    strokeWidth: 2.2,
                   ),
                 ),
               ),

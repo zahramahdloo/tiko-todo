@@ -226,7 +226,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                           child: HugeIcon(
                             icon: HugeIcons.strokeRoundedTaskAdd01,
                             size: 24,
-                            strokeWidth: 2.35,
+                            strokeWidth: 2.2,
                           ),
                         ),
                       ),
@@ -389,7 +389,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                           icon: HugeIcons.strokeRoundedPlusSign,
                           size: 24,
                           color: Colors.white,
-                          strokeWidth: 2.35,
+                          strokeWidth: 2.2,
                         ),
                         label: const Text('ثبت کار'),
                       ),
@@ -439,7 +439,7 @@ class _HeaderStrip extends StatelessWidget {
                 icon: HugeIcons.strokeRoundedPlusSign,
                 color: Colors.white,
                 size: 25,
-                strokeWidth: 2.35,
+                strokeWidth: 2.2,
               ),
             ),
           ),
@@ -486,7 +486,7 @@ class _SectionTitle extends StatelessWidget {
 
     return Row(
       children: [
-        HugeIcon(icon: icon, color: primary, size: 21, strokeWidth: 2.35),
+        HugeIcon(icon: icon, color: primary, size: 21, strokeWidth: 2.2),
         const SizedBox(width: 7),
         Text(
           title,
@@ -582,7 +582,7 @@ class _ActionTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              HugeIcon(icon: icon, color: color, size: 23, strokeWidth: 2.35),
+              HugeIcon(icon: icon, color: color, size: 23, strokeWidth: 2.2),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -616,7 +616,7 @@ class _ActionTile extends StatelessWidget {
                   icon: const HugeIcon(
                     icon: HugeIcons.strokeRoundedMultiplicationSign,
                     size: 21,
-                    strokeWidth: 2.35,
+                    strokeWidth: 2.2,
                   ),
                 ),
             ],

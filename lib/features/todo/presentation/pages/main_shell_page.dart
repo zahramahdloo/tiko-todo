@@ -117,6 +117,6 @@ class _NavIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HugeIcon(icon: icon, size: 26, color: color, strokeWidth: 2.35);
+    return HugeIcon(icon: icon, size: 26, color: color, strokeWidth: 2.2);
   }
 }

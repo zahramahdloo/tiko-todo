@@ -115,7 +115,7 @@ class TodoItem extends StatelessWidget {
                       icon: HugeIcons.strokeRoundedTick02,
                       size: 24,
                       color: Colors.white,
-                      strokeWidth: 2.35,
+                      strokeWidth: 2.2,
                     ),
                   )
                 : null,
@@ -205,7 +205,7 @@ class TodoItem extends StatelessWidget {
                                   color: subtask.isCompleted
                                       ? AppColors.statusCompleted
                                       : colorScheme.onSurfaceVariant,
-                                  strokeWidth: 2.35,
+                                  strokeWidth: 2.2,
                                 ),
                                 const SizedBox(width: 4),
                                 Expanded(
@@ -267,7 +267,7 @@ class TodoItem extends StatelessWidget {
                         ? HugeIcons.strokeRoundedRotateLeft01
                         : HugeIcons.strokeRoundedCheckmarkCircle02,
                     size: 24,
-                    strokeWidth: 2.35,
+                    strokeWidth: 2.2,
                   ),
                   const SizedBox(width: 8),
                   Text(completed ? 'بازگردانی' : 'انجام شد'),
@@ -281,7 +281,7 @@ class TodoItem extends StatelessWidget {
                   HugeIcon(
                     icon: HugeIcons.strokeRoundedPencilEdit02,
                     size: 24,
-                    strokeWidth: 2.35,
+                    strokeWidth: 2.2,
                   ),
                   SizedBox(width: 8),
                   Text('ویرایش'),
@@ -295,7 +295,7 @@ class TodoItem extends StatelessWidget {
                   const HugeIcon(
                     icon: HugeIcons.strokeRoundedArchive,
                     size: 24,
-                    strokeWidth: 2.35,
+                    strokeWidth: 2.2,
                   ),
                   const SizedBox(width: 8),
                   Text(todo.isArchived ? 'خروج از آرشیو' : 'آرشیو'),
@@ -311,7 +311,7 @@ class TodoItem extends StatelessWidget {
                     icon: HugeIcons.strokeRoundedDelete02,
                     size: 24,
                     color: Colors.red,
-                    strokeWidth: 2.35,
+                    strokeWidth: 2.2,
                   ),
                   SizedBox(width: 8),
                   Text('حذف', style: TextStyle(color: Colors.red)),
@@ -437,7 +437,7 @@ class _ReminderCountdownState extends State<_ReminderCountdown> {
               icon: HugeIcons.strokeRoundedBellDot,
               size: 18,
               color: AppColors.primary,
-              strokeWidth: 2.35,
+              strokeWidth: 2.2,
             ),
             const SizedBox(width: 4),
             Text(_format(d), style: const TextStyle(fontSize: 11)),

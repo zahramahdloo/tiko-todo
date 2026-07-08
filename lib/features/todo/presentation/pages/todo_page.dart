@@ -8,6 +8,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/enums/todo_priority.dart';
 import '../../../../core/enums/todo_status.dart';
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/widgets/app_bar_brand_title.dart';
 import '../../../../core/widgets/responsive_layout.dart';
 import '../../domain/entities/todo.dart';
@@ -284,7 +285,7 @@ class _TodoPageState extends State<TodoPage> {
                           icon: HugeIcons.strokeRoundedAlertCircle,
                           color: Colors.red,
                           size: 64,
-                          strokeWidth: 2.35,
+                          strokeWidth: 2.2,
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -318,7 +319,7 @@ class _TodoPageState extends State<TodoPage> {
                             icon: HugeIcons.strokeRoundedTask01,
                             size: 80,
                             color: Colors.grey,
-                            strokeWidth: 2.35,
+                            strokeWidth: 2.2,
                           ),
                           SizedBox(height: 12),
                           Text(
@@ -342,7 +343,7 @@ class _TodoPageState extends State<TodoPage> {
                               icon: HugeIcons.strokeRoundedSearchMinus,
                               size: 80,
                               color: Colors.grey,
-                              strokeWidth: 2.35,
+                              strokeWidth: 2.2,
                             ),
                             const SizedBox(height: 12),
                             Text(
@@ -397,7 +398,7 @@ class _TodoPageState extends State<TodoPage> {
                                         icon: const HugeIcon(
                                           icon: HugeIcons.strokeRoundedRefresh,
                                           size: 23,
-                                          strokeWidth: 2.35,
+                                          strokeWidth: 2.2,
                                         ),
                                       ),
                                       IconButton(
@@ -406,7 +407,7 @@ class _TodoPageState extends State<TodoPage> {
                                         icon: const HugeIcon(
                                           icon: HugeIcons.strokeRoundedPlusSign,
                                           size: 23,
-                                          strokeWidth: 2.35,
+                                          strokeWidth: 2.2,
                                         ),
                                       ),
                                       const Spacer(),
@@ -420,7 +421,7 @@ class _TodoPageState extends State<TodoPage> {
                                           icon:
                                               HugeIcons.strokeRoundedSorting03,
                                           size: 23,
-                                          strokeWidth: 2.35,
+                                          strokeWidth: 2.2,
                                         ),
                                         itemBuilder: (context) => const [
                                           PopupMenuItem(
@@ -561,18 +562,18 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
               : HugeIcons.strokeRoundedMoon,
           size: 24,
           color: primary,
-          strokeWidth: 2.35,
+          strokeWidth: 2.2,
         ),
       ),
       actions: [
         IconButton(
           tooltip: 'تنظیمات',
-          onPressed: () => context.go('/settings'),
+          onPressed: () => context.go(AppRoutes.settings),
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedSettings02,
             size: 24,
             color: primary,
-            strokeWidth: 2.35,
+            strokeWidth: 2.2,
           ),
         ),
       ],
@@ -598,7 +599,7 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
                       child: HugeIcon(
                         icon: HugeIcons.strokeRoundedSearch01,
                         size: 24,
-                        strokeWidth: 2.35,
+                        strokeWidth: 2.2,
                       ),
                     ),
                     suffixIcon: searchController.text.isEmpty
@@ -612,7 +613,7 @@ class _TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
                             icon: const HugeIcon(
                               icon: HugeIcons.strokeRoundedMultiplicationSign,
                               size: 24,
-                              strokeWidth: 2.35,
+                              strokeWidth: 2.2,
                             ),
                           ),
                     filled: true,
@@ -773,7 +774,7 @@ class _TodoSummary extends StatelessWidget {
                 icon: HugeIcons.strokeRoundedChartColumn,
                 color: primary,
                 size: 24,
-                strokeWidth: 2.35,
+                strokeWidth: 2.2,
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -847,7 +848,7 @@ class _SummaryPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          HugeIcon(icon: icon, size: 19, color: color, strokeWidth: 2.35),
+          HugeIcon(icon: icon, size: 19, color: color, strokeWidth: 2.2),
           const SizedBox(width: 4),
           Text(
             label,

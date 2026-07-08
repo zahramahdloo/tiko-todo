@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/enums/todo_status.dart';
+import '../../../../core/error/api_error_messages.dart';
 import '../../domain/entities/todo.dart';
 import '../../domain/usecases/add_todo.dart';
 import '../../domain/usecases/delete_todo.dart';
@@ -34,7 +35,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       final todos = await getTodos();
       emit(TodoLoaded(todos));
     } catch (e) {
-      emit(TodoError('خطا در بارگذاری کارها: $e'));
+      emit(TodoError(_errorMessage('خطا در بارگذاری کارها', e)));
     }
   }
 
@@ -45,7 +46,12 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       final todos = await getTodos();
       emit(TodoLoaded(todos));
     } catch (e) {
-      emit(TodoError('خطا در افزودن کار: $e', previousTodos: _currentTodos));
+      emit(
+        TodoError(
+          _errorMessage('خطا در افزودن کار', e),
+          previousTodos: _currentTodos,
+        ),
+      );
     }
   }
 
@@ -56,7 +62,12 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       final todos = await getTodos();
       emit(TodoLoaded(todos));
     } catch (e) {
-      emit(TodoError('خطا در حذف کار: $e', previousTodos: _currentTodos));
+      emit(
+        TodoError(
+          _errorMessage('خطا در حذف کار', e),
+          previousTodos: _currentTodos,
+        ),
+      );
     }
   }
 
@@ -74,7 +85,10 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       emit(TodoLoaded(todos));
     } catch (e) {
       emit(
-        TodoError('خطا در تغییر وضعیت کار: $e', previousTodos: _currentTodos),
+        TodoError(
+          _errorMessage('خطا در تغییر وضعیت کار', e),
+          previousTodos: _currentTodos,
+        ),
       );
     }
   }
@@ -86,7 +100,12 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       final todos = await getTodos();
       emit(TodoLoaded(todos));
     } catch (e) {
-      emit(TodoError('خطا در ویرایش کار: $e', previousTodos: _currentTodos));
+      emit(
+        TodoError(
+          _errorMessage('خطا در ویرایش کار', e),
+          previousTodos: _currentTodos,
+        ),
+      );
     }
   }
 
@@ -112,5 +131,9 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     }
 
     return todo.copyWith(clearCompletedAt: true);
+  }
+
+  String _errorMessage(String title, Object error) {
+    return '$title. ${ApiErrorMessages.userMessage(error)}';
   }
 }

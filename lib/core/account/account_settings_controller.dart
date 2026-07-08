@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../error/api_error_messages.dart';
 import 'app_user.dart';
 
 class AccountSettingsController extends ChangeNotifier {
@@ -10,6 +13,7 @@ class AccountSettingsController extends ChangeNotifier {
   static const _hideCompletedKey = 'hide_completed';
 
   final SupabaseClient _client;
+  late final StreamSubscription<AuthState> _authStateSubscription;
 
   AppUser? _currentUser;
   Color _primaryColor = const Color(0xFF2463EB);
@@ -17,7 +21,11 @@ class AccountSettingsController extends ChangeNotifier {
   bool _hideCompleted = false;
   bool _isLoaded = false;
 
-  AccountSettingsController(this._client);
+  AccountSettingsController(this._client) {
+    _authStateSubscription = _client.auth.onAuthStateChange.listen((state) {
+      _setCurrentUser(state.session?.user);
+    });
+  }
 
   AppUser? get currentUser => _currentUser;
   Color get primaryColor => _primaryColor;
@@ -47,8 +55,7 @@ class AccountSettingsController extends ChangeNotifier {
 
     _hideCompleted = prefs.getBool(_hideCompletedKey) ?? false;
 
-    final user = _client.auth.currentUser;
-    _currentUser = user == null ? null : _mapSupabaseUser(user);
+    _currentUser = _mapNullableSupabaseUser(_client.auth.currentUser);
 
     _isLoaded = true;
     notifyListeners();
@@ -62,8 +69,10 @@ class AccountSettingsController extends ChangeNotifier {
     final normalizedEmail = email.trim().toLowerCase();
     final trimmedName = name.trim();
 
-    if (trimmedName.length < 2) return 'نام باید حداقل ۲ حرف باشد';
-    if (!normalizedEmail.contains('@')) return 'ایمیل معتبر نیست';
+    if (trimmedName.length < 2) return 'نام نمایشی را حداقل با ۲ حرف وارد کنید';
+    if (!normalizedEmail.contains('@')) {
+      return 'ایمیل را با قالب درست وارد کنید';
+    }
     if (password.length < 6) return 'رمز عبور باید حداقل ۶ کاراکتر باشد';
 
     try {
@@ -75,15 +84,14 @@ class AccountSettingsController extends ChangeNotifier {
 
       final user = response.user;
       if (user != null) {
-        _currentUser = _mapSupabaseUser(user);
+        _setCurrentUser(user);
       }
 
-      notifyListeners();
       return null;
     } on AuthException catch (e) {
       return _authErrorMessage(e.message);
     } catch (_) {
-      return 'ثبت‌نام انجام نشد. دوباره تلاش کنید';
+      return 'ساخت حساب تیکو انجام نشد. دوباره تلاش کنید';
     }
   }
 
@@ -93,8 +101,10 @@ class AccountSettingsController extends ChangeNotifier {
   }) async {
     final normalizedEmail = email.trim().toLowerCase();
 
-    if (!normalizedEmail.contains('@')) return 'ایمیل معتبر نیست';
-    if (password.isEmpty) return 'رمز عبور را وارد کنید';
+    if (!normalizedEmail.contains('@')) {
+      return 'ایمیل را با قالب درست وارد کنید';
+    }
+    if (password.isEmpty) return 'رمز عبور حساب تیکو را وارد کنید';
 
     try {
       final response = await _client.auth.signInWithPassword(
@@ -103,34 +113,48 @@ class AccountSettingsController extends ChangeNotifier {
       );
 
       final user = response.user;
-      if (user == null) return 'ورود انجام نشد';
+      if (user == null) return 'ورود به تیکو انجام نشد';
 
-      _currentUser = _mapSupabaseUser(user);
-      notifyListeners();
+      _setCurrentUser(user);
       return null;
     } on AuthException catch (e) {
       return _authErrorMessage(e.message);
     } catch (_) {
-      return 'ورود انجام نشد. دوباره تلاش کنید';
+      return 'ورود به تیکو انجام نشد. دوباره تلاش کنید';
     }
   }
 
-  Future<void> signOut() async {
-    await _client.auth.signOut();
-    _currentUser = null;
-    notifyListeners();
+  Future<String?> signOut() async {
+    try {
+      await _client.auth.signOut();
+      _setCurrentUser(null);
+      return null;
+    } on AuthException catch (e) {
+      return _authErrorMessage(e.message);
+    } catch (_) {
+      return 'خروج از حساب تیکو انجام نشد. دوباره تلاش کنید';
+    }
   }
 
-  Future<void> updateProfileName(String name) async {
+  Future<String?> updateProfileName(String name) async {
     final user = _currentUser;
     final trimmed = name.trim();
 
-    if (user == null || trimmed.length < 2) return;
+    if (user == null) return 'برای ویرایش پروفایل، دوباره وارد حساب تیکو شوید';
+    if (trimmed.length < 2) return 'نام نمایشی را حداقل با ۲ حرف وارد کنید';
 
-    await _client.auth.updateUser(UserAttributes(data: {'name': trimmed}));
+    try {
+      final response = await _client.auth.updateUser(
+        UserAttributes(data: {'name': trimmed}),
+      );
 
-    _currentUser = user.copyWith(name: trimmed);
-    notifyListeners();
+      _setCurrentUser(response.user, fallback: user.copyWith(name: trimmed));
+      return null;
+    } on AuthException catch (e) {
+      return _authErrorMessage(e.message);
+    } catch (_) {
+      return 'نام نمایشی ذخیره نشد. دوباره تلاش کنید';
+    }
   }
 
   Future<void> setPrimaryColor(Color color) async {
@@ -173,22 +197,47 @@ class AccountSettingsController extends ChangeNotifier {
     );
   }
 
+  AppUser? _mapNullableSupabaseUser(User? user) {
+    return user == null ? null : _mapSupabaseUser(user);
+  }
+
+  void _setCurrentUser(User? user, {AppUser? fallback}) {
+    final nextUser = user == null ? fallback : _mapSupabaseUser(user);
+
+    if (_sameUser(_currentUser, nextUser)) return;
+
+    _currentUser = nextUser;
+    notifyListeners();
+  }
+
+  bool _sameUser(AppUser? current, AppUser? next) {
+    return current?.id == next?.id &&
+        current?.name == next?.name &&
+        current?.email == next?.email;
+  }
+
   String _authErrorMessage(String message) {
     final lower = message.toLowerCase();
 
     if (lower.contains('invalid login credentials')) {
-      return 'ایمیل یا رمز عبور اشتباه است';
+      return 'ایمیل یا رمز عبور با حساب تیکو هم‌خوانی ندارد';
     }
 
     if (lower.contains('already registered') ||
         lower.contains('user already registered')) {
-      return 'این ایمیل قبلاً ثبت شده است';
+      return 'با این ایمیل قبلاً حساب تیکو ساخته شده است';
     }
 
     if (lower.contains('email not confirmed')) {
-      return 'لطفاً ایمیل خود را تأیید کنید';
+      return 'برای فعال شدن حساب تیکو، ایمیل‌تان را تأیید کنید';
     }
 
-    return message;
+    return ApiErrorMessages.userMessage(AuthException(message));
+  }
+
+  @override
+  void dispose() {
+    _authStateSubscription.cancel();
+    super.dispose();
   }
 }

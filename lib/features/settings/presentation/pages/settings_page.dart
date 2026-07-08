@@ -4,6 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../core/account/account_settings_controller.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/widgets/app_bar_brand_title.dart';
 import '../../../../core/widgets/responsive_layout.dart';
 
@@ -47,16 +48,33 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _saveName(AccountSettingsController settings) async {
-    await settings.updateProfileName(_nameController.text);
+    final error = await settings.updateProfileName(_nameController.text);
     if (!mounted) return;
+
+    if (error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('نام کاربر ذخیره شد')));
   }
 
   Future<void> _signOut(AccountSettingsController settings) async {
-    await settings.signOut();
-    if (mounted) context.go('/auth');
+    final error = await settings.signOut();
+    if (!mounted) return;
+
+    if (error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+
+    context.go(AppRoutes.auth);
   }
 
   @override
@@ -117,7 +135,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               child: HugeIcon(
                                 icon: HugeIcons.strokeRoundedUser,
                                 size: 24,
-                                strokeWidth: 2.35,
+                                strokeWidth: 2.2,
                               ),
                             ),
                           ),
@@ -130,7 +148,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             icon: const HugeIcon(
                               icon: HugeIcons.strokeRoundedFloppyDisk,
                               size: 24,
-                              strokeWidth: 2.35,
+                              strokeWidth: 2.2,
                             ),
                             label: const Text('ذخیره نام'),
                           ),
@@ -195,7 +213,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               icon: HugeIcon(
                                 icon: HugeIcons.strokeRoundedSettings02,
                                 size: 28,
-                                strokeWidth: 2.35,
+                                strokeWidth: 2.2,
                               ),
                               label: Text('سیستم'),
                             ),
@@ -204,7 +222,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               icon: HugeIcon(
                                 icon: HugeIcons.strokeRoundedSun03,
                                 size: 28,
-                                strokeWidth: 2.35,
+                                strokeWidth: 2.2,
                               ),
                               label: Text('روشن'),
                             ),
@@ -213,7 +231,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               icon: HugeIcon(
                                 icon: HugeIcons.strokeRoundedMoon,
                                 size: 28,
-                                strokeWidth: 2.35,
+                                strokeWidth: 2.2,
                               ),
                               label: Text('تاریک'),
                             ),
@@ -249,22 +267,22 @@ class _SettingsPageState extends State<SettingsPage> {
                             leading: const HugeIcon(
                               icon: HugeIcons.strokeRoundedTask01,
                               size: 28,
-                              strokeWidth: 2.35,
+                              strokeWidth: 2.2,
                             ),
                             title: const Text('بازگشت به کارها'),
                             trailing: const HugeIcon(
                               icon: HugeIcons.strokeRoundedArrowLeft01,
                               size: 28,
-                              strokeWidth: 2.35,
+                              strokeWidth: 2.2,
                             ),
-                            onTap: () => context.go('/home'),
+                            onTap: () => context.go(AppRoutes.home),
                           ),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const HugeIcon(
                             icon: HugeIcons.strokeRoundedLogout03,
                             size: 28,
-                            strokeWidth: 2.35,
+                            strokeWidth: 2.2,
                           ),
                           title: const Text('خروج از حساب'),
                           textColor: Colors.red,

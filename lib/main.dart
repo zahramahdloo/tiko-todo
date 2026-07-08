@@ -25,15 +25,27 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final settings = sl<AccountSettingsController>();
+  State<MyApp> createState() => _MyAppState();
+}
 
+class _MyAppState extends State<MyApp> {
+  late final AccountSettingsController _settings;
+  late final _router = createAppRouter(_settings);
+
+  @override
+  void initState() {
+    super.initState();
+    _settings = sl<AccountSettingsController>();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: settings,
+      animation: _settings,
       builder: (context, _) {
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
@@ -45,10 +57,10 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          theme: AppTheme.light(settings.primaryColor),
-          darkTheme: AppTheme.dark(settings.primaryColor),
-          themeMode: settings.themeMode,
-          routerConfig: appRouter,
+          theme: AppTheme.light(_settings.primaryColor),
+          darkTheme: AppTheme.dark(_settings.primaryColor),
+          themeMode: _settings.themeMode,
+          routerConfig: _router,
         );
       },
     );

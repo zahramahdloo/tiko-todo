@@ -314,7 +314,7 @@ Future<void> showAddTaskBottomSheet({
                               icon: const HugeIcon(
                                 icon: HugeIcons.strokeRoundedCalendar03,
                                 size: 24,
-                                strokeWidth: 2.35,
+                                strokeWidth: 2.2,
                               ),
                               label: Text(
                                 selectedDueAt == null
@@ -333,7 +333,7 @@ Future<void> showAddTaskBottomSheet({
                               icon: const HugeIcon(
                                 icon: HugeIcons.strokeRoundedMultiplicationSign,
                                 size: 24,
-                                strokeWidth: 2.35,
+                                strokeWidth: 2.2,
                               ),
                             ),
                         ],
@@ -379,7 +379,7 @@ Future<void> showAddTaskBottomSheet({
                               icon: const HugeIcon(
                                 icon: HugeIcons.strokeRoundedClock01,
                                 size: 24,
-                                strokeWidth: 2.35,
+                                strokeWidth: 2.2,
                               ),
                               label: Text(
                                 selectedReminderAt == null
@@ -396,7 +396,7 @@ Future<void> showAddTaskBottomSheet({
                               icon: const HugeIcon(
                                 icon: HugeIcons.strokeRoundedMultiplicationSign,
                                 size: 24,
-                                strokeWidth: 2.35,
+                                strokeWidth: 2.2,
                               ),
                             ),
                         ],
